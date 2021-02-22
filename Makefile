@@ -14,5 +14,10 @@ bootstrap: goimports
 server_generate:
 	./bin/server_generator ./interfaces
 
-.PHONY: generate
-generate: server_generate
+.PHONY: server_generate_with_mock
+server_generate_with_mock:
+	./bin/server_generator -mock ./interfaces
+
+.PHONY: run_mock
+run_mock:
+	go run -tags mock ./interfaces/cmd/mock/main.go -port 8888
