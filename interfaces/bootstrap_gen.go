@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
+	"github.com/ScoreMarket/backend/interfaces/_userID/items"
 	"github.com/ScoreMarket/backend/interfaces/props"
 	"github.com/labstack/echo/v4"
 )
@@ -71,7 +72,10 @@ func Bootstrap(p *props.ControllerProps, e *echo.Echo, middlewareList Middleware
 
 	rootGroup := e.Group("/")
 	setMiddleware(rootGroup, "/", middleware)
-	NewRoutes(p, rootGroup, opts...)
+
+	itemsGroup := rootGroup.Group(":userID/items/")
+	setMiddleware(itemsGroup, "/:userID/items/", middleware)
+	items.NewRoutes(p, itemsGroup, opts...)
 }
 
 func setMiddleware(group *echo.Group, path string, list MiddlewareMap) {
