@@ -2,8 +2,8 @@ package model
 
 // User - user
 type User struct {
-	ID              string `json:"id"`
-	DisplayName     string `json:"displayName"`
-	ProfileImageURL string `json:"profileImageUrl"`
-	StatusMessage   string `json:"statusMessage"`
+	ID              string `firestore:"id" json:"id"`
+	DisplayName     string `firestore:"displayName" json:"displayName"`
+	ProfileImageURL string `firestore:"profileImageUrl" json:"profileImageUrl"`
+	StatusMessage   string `firestore:"statusMessage" json:"statusMessage"`
 }
