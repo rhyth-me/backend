@@ -29,6 +29,5 @@ func InitFirestore() *firestore.Client {
 	if err != nil {
 		glog.Errorln(err)
 	}
-	FS := firestore
-	return FS
+	return firestore
 }
