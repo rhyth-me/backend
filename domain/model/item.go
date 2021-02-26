@@ -2,7 +2,7 @@ package model
 
 // Item - item
 type Item struct {
-	ID         int            `firestore:"id" json:"id"`
+	ID         string         `firestore:"id" json:"id"`
 	Snippet    ItemSnippet    `firestore:"snippet" json:"snippet"`
 	Statistics ItemStatistics `firestore:"statistics" json:"statistics"`
 }
