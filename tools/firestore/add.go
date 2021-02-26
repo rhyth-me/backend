@@ -2,24 +2,19 @@ package main
 
 import (
 	"context"
-	"log"
 
 	"github.com/ScoreMarket/backend/domain/model"
 	"github.com/ScoreMarket/backend/utils"
-	"github.com/google/uuid"
 )
 
 func main() {
 	ctx := context.Background()
 	firestore := utils.InitFirestore()
 
-	uidObj, err := uuid.NewUUID()
-	if err != nil {
-		log.Fatalf("failed to generate UUID: %v", err)
-	}
+	var itemID string = utils.RandomString(8)
 
 	recode := model.Item{
-		ID: uidObj.String(),
+		ID: itemID,
 		Snippet: model.ItemSnippet{
 			Title:        "【プロセカ】『夜に駆ける』【創作譜面】",
 			ThumbnailURL: "http://img.youtube.com/vi/zMxR1jZg--U/maxresdefault.jpg",
@@ -31,7 +26,13 @@ func main() {
 			Rating:        3.7,
 			DownloadCount: 123,
 		},
+		Author: model.User{
+			ID:              "milk_choco",
+			DisplayName:     "みるくちょこ",
+			ProfileImageURL: "https://pbs.twimg.com/profile_images/1364780894595076099/AQFVWEBa_400x400.png",
+			StatusMessage:   "創作譜面",
+		},
 	}
 
-	firestore.Collection("items").Doc(recode.ID).Set(ctx, recode)
+	firestore.Collection("items").Add(ctx, recode)
 }
