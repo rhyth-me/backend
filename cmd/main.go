@@ -6,6 +6,7 @@ import (
 
 	"github.com/ScoreMarket/backend/interfaces"
 	"github.com/ScoreMarket/backend/interfaces/props"
+	"github.com/ScoreMarket/backend/utils"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -33,7 +34,12 @@ func main() {
 	e.Debug = true
 	e.Use(middleware.Recover())
 
-	interfaces.Bootstrap(new(props.ControllerProps), e, nil, os.Stdout)
+	p := new(props.ControllerProps)
+
+	// firebase init
+	p.Firestore = utils.InitFirestore()
+
+	interfaces.Bootstrap(p, e, nil, os.Stdout)
 
 	fmt.Println("All routes are...")
 	for _, r := range e.Routes() {

@@ -1,3 +1,6 @@
 # Other
 bin/
 .DS_Store
+
+# env
+.env

@@ -1,7 +1,9 @@
 // Package props is a scaffold file for props of controllers
 package props
 
+import "cloud.google.com/go/firestore"
+
 // ControllerProps is passed from Bootstrap() to all controllers
 type ControllerProps struct {
-	// DB, config, etc...
+	Firestore *firestore.Client
 }
