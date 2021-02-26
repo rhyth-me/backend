@@ -5,6 +5,7 @@ type Item struct {
 	ID         string         `firestore:"id" json:"id"`
 	Snippet    ItemSnippet    `firestore:"snippet" json:"snippet"`
 	Statistics ItemStatistics `firestore:"statistics" json:"statistics"`
+	Author     User           `firestore:"author" json:"author"`
 }
 
 type ItemSnippet struct {
