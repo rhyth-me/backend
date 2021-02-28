@@ -10,6 +10,7 @@ import (
 	"runtime/debug"
 
 	"github.com/labstack/echo/v4"
+	"github.com/rhyth-me/backend/interfaces/_userID/accounts"
 	"github.com/rhyth-me/backend/interfaces/_userID/items"
 	"github.com/rhyth-me/backend/interfaces/props"
 )
@@ -72,6 +73,10 @@ func Bootstrap(p *props.ControllerProps, e *echo.Echo, middlewareList Middleware
 
 	rootGroup := e.Group("/")
 	setMiddleware(rootGroup, "/", middleware)
+
+	accountsGroup := rootGroup.Group(":userID/accounts/")
+	setMiddleware(accountsGroup, "/:userID/accounts/", middleware)
+	accounts.NewRoutes(p, accountsGroup, opts...)
 
 	itemsGroup := rootGroup.Group(":userID/items/")
 	setMiddleware(itemsGroup, "/:userID/items/", middleware)
