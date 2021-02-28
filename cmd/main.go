@@ -23,6 +23,7 @@ func main() {
 	auth := utils.InitAuth()
 
 	// Firebase auth - login user check
+	// uid := c.(*model.CustomContext).AuthUser.UID
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			token, err := auth.VerifyIDToken(context.Background(), c.Request().Header.Get("X-Token"))
