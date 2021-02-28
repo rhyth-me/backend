@@ -29,27 +29,27 @@ func NewRoutes(p *props.ControllerProps, router *echo.Group, opts ...io.Writer) 
 	r := &Routes{
 		router: router,
 	}
-	router.POST("create_account", r.PostCreateAccount(p))
+	router.POST("stripe", r.PostStripe(p))
 	return r
 }
 
-// PostCreateAccount ...
-func (r *Routes) PostCreateAccount(p *props.ControllerProps) echo.HandlerFunc {
-	i := NewPostCreateAccountController(p)
+// PostStripe ...
+func (r *Routes) PostStripe(p *props.ControllerProps) echo.HandlerFunc {
+	i := NewPostStripeController(p)
 
 	b, ok := (interface{})(i).(interface{ AutoBind() bool })
 	bindable := !ok || b.AutoBind()
 
 	return func(c echo.Context) error {
 		var (
-			req  *PostCreateAccountRequest
+			req  *PostStripeRequest
 			werr *wrapper.APIError
 		)
 
 		if bindable {
-			req = new(PostCreateAccountRequest)
+			req = new(PostStripeRequest)
 			if err := c.Bind(req); err != nil {
-				log.Printf("failed to JSON binding(/_userID/accounts/create_account): %+v", err)
+				log.Printf("failed to JSON binding(/_userID/accounts/stripe): %+v", err)
 				return c.JSON(http.StatusBadRequest, map[string]interface{}{
 					"code":    http.StatusBadRequest,
 					"message": "invalid request.",
@@ -62,7 +62,7 @@ func (r *Routes) PostCreateAccount(p *props.ControllerProps) echo.HandlerFunc {
 				return err
 			}
 		}
-		res, err := i.PostCreateAccount(c, req)
+		res, err := i.PostStripe(c, req)
 		if err != nil {
 			if xerrors.As(err, &werr) {
 				log.Printf("%+v", werr)
@@ -78,7 +78,7 @@ func (r *Routes) PostCreateAccount(p *props.ControllerProps) echo.HandlerFunc {
 	}
 }
 
-// IPostCreateAccountController ...
-type IPostCreateAccountController interface {
-	PostCreateAccount(c echo.Context, req *PostCreateAccountRequest) (res *PostCreateAccountResponse, err error)
+// IPostStripeController ...
+type IPostStripeController interface {
+	PostStripe(c echo.Context, req *PostStripeRequest) (res *PostStripeResponse, err error)
 }
