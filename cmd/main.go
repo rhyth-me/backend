@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rhyth-me/backend/interfaces"
 	"github.com/rhyth-me/backend/interfaces/props"
+	"github.com/rhyth-me/backend/pkg/stripe"
 	"github.com/rhyth-me/backend/utils"
 )
 
@@ -38,6 +39,7 @@ func main() {
 
 	// firebase init
 	p.Firestore = utils.InitFirestore()
+	p.Stripe = stripe.Init()
 
 	interfaces.Bootstrap(p, e, nil, os.Stdout)
 
