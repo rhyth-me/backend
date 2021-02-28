@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
-	"github.com/ScoreMarket/backend/domain/model"
-	"github.com/ScoreMarket/backend/utils"
+	"github.com/rhyth-me/backend/domain/model"
+	"github.com/rhyth-me/backend/utils"
 )
 
 func main() {

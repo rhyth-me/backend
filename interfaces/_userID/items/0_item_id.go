@@ -1,7 +1,7 @@
 package items
 
 import (
-	"github.com/ScoreMarket/backend/domain/model"
+	"github.com/rhyth-me/backend/domain/model"
 )
 
 // GetItemInfoRequest - fetch item info by ID.

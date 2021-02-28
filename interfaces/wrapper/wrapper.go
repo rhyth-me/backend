@@ -5,7 +5,7 @@ package wrapper
 import (
 	"fmt"
 
-	"github.com/ScoreMarket/backend/interfaces/wrapper/internal"
+	"github.com/rhyth-me/backend/interfaces/wrapper/internal"
 )
 
 // APIError - API Error

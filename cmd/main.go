@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ScoreMarket/backend/interfaces"
-	"github.com/ScoreMarket/backend/interfaces/props"
-	"github.com/ScoreMarket/backend/utils"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/rhyth-me/backend/interfaces"
+	"github.com/rhyth-me/backend/interfaces/props"
+	"github.com/rhyth-me/backend/utils"
 )
 
 func main() {

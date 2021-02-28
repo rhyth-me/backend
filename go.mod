@@ -1,4 +1,4 @@
-module github.com/ScoreMarket/backend
+module github.com/rhyth-me/backend
 
 go 1.14
 
