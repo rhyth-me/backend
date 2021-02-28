@@ -6,11 +6,11 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ScoreMarket/backend/domain/model"
-	"github.com/ScoreMarket/backend/interfaces/props"
-	"github.com/ScoreMarket/backend/interfaces/wrapper"
 	"github.com/golang/glog"
 	"github.com/labstack/echo/v4"
+	"github.com/rhyth-me/backend/domain/model"
+	"github.com/rhyth-me/backend/interfaces/props"
+	"github.com/rhyth-me/backend/interfaces/wrapper"
 )
 
 // GetItemInfoController ...

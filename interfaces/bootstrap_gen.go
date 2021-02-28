@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/ScoreMarket/backend/interfaces/_userID/items"
-	"github.com/ScoreMarket/backend/interfaces/props"
 	"github.com/labstack/echo/v4"
+	"github.com/rhyth-me/backend/interfaces/_userID/items"
+	"github.com/rhyth-me/backend/interfaces/props"
 )
 
 // MiddlewareList ...
