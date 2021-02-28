@@ -1,8 +1,9 @@
-package utils
+package random
 
 import "math/rand"
 
-func RandomString(n int) string {
+// String - generate random string
+func String(n int) string {
 	var letter = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
 	b := make([]rune, n)
