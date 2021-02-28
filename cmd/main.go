@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/rhyth-me/backend/domain/model"
 	"github.com/rhyth-me/backend/interfaces"
 	"github.com/rhyth-me/backend/interfaces/props"
 	"github.com/rhyth-me/backend/pkg/stripe"
@@ -14,23 +16,27 @@ import (
 )
 
 func main() {
+	godotenv.Load(".env")
+
 	e := echo.New()
 
-	middlewareList := make([]*interfaces.MiddlewareSet, 0)
-	mid := &interfaces.MiddlewareSet{
-		Path: "/api/",
-		MiddlewareFunc: []echo.MiddlewareFunc{
-			middleware.JWTWithConfig(middleware.JWTConfig{
-				ContextKey:     "jwt",
-				SuccessHandler: nil,
-				SigningKey:     []byte("key"),
-				SigningMethod:  jwt.SigningMethodHS512.Name,
-				Claims:         new(jwt.StandardClaims),
-				TokenLookup:    "cookie:ApiGenSession",
-			}),
-		},
-	}
-	middlewareList = append(middlewareList, mid)
+	auth := utils.InitAuth()
+
+	// Firebase auth - login user check
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			token, err := auth.VerifyIDToken(context.Background(), c.Request().Header.Get("X-Token"))
+			if err != nil {
+				cc := &model.CustomContext{c, model.AuthUser{}}
+				return next(cc)
+			}
+
+			cc := &model.CustomContext{c, model.AuthUser{
+				UID: token.UID,
+			}}
+			return next(cc)
+		}
+	})
 
 	e.Debug = true
 	e.Use(middleware.Recover())
