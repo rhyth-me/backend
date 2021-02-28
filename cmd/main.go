@@ -11,8 +11,8 @@ import (
 	"github.com/rhyth-me/backend/domain/model"
 	"github.com/rhyth-me/backend/interfaces"
 	"github.com/rhyth-me/backend/interfaces/props"
+	"github.com/rhyth-me/backend/pkg/firebase"
 	"github.com/rhyth-me/backend/pkg/stripe"
-	"github.com/rhyth-me/backend/utils"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 
 	e := echo.New()
 
-	auth := utils.InitAuth()
+	auth := firebase.InitAuth()
 
 	// Firebase auth - login user check
 	// uid := c.(*model.CustomContext).AuthUser.UID
@@ -45,7 +45,7 @@ func main() {
 	p := new(props.ControllerProps)
 
 	// firebase init
-	p.Firestore = utils.InitFirestore()
+	p.Firestore = firebase.InitFirestore()
 	p.Stripe = stripe.Init()
 
 	interfaces.Bootstrap(p, e, nil, os.Stdout)
