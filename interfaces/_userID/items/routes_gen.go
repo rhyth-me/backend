@@ -29,8 +29,54 @@ func NewRoutes(p *props.ControllerProps, router *echo.Group, opts ...io.Writer) 
 	r := &Routes{
 		router: router,
 	}
+	router.GET("", r.Get(p))
 	router.GET(":itemID", r.GetItemInfo(p))
 	return r
+}
+
+// Get ...
+func (r *Routes) Get(p *props.ControllerProps) echo.HandlerFunc {
+	i := NewGetController(p)
+
+	b, ok := (interface{})(i).(interface{ AutoBind() bool })
+	bindable := !ok || b.AutoBind()
+
+	return func(c echo.Context) error {
+		var (
+			req  *GetRequest
+			werr *wrapper.APIError
+		)
+
+		if bindable {
+			req = new(GetRequest)
+			if err := c.Bind(req); err != nil {
+				log.Printf("failed to JSON binding(/_userID/items): %+v", err)
+				return c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"code":    http.StatusBadRequest,
+					"message": "invalid request.",
+				})
+			}
+			if err := c.Validate(req); err != nil && err != echo.ErrValidatorNotRegistered {
+				if xerrors.As(err, &werr) {
+					return c.JSON(werr.Status, werr.Body)
+				}
+				return err
+			}
+		}
+		res, err := i.Get(c, req)
+		if err != nil {
+			if xerrors.As(err, &werr) {
+				log.Printf("%+v", werr)
+				return c.JSON(werr.Status, werr.Body)
+			}
+			return err
+		}
+		if res == nil {
+			return nil
+		}
+
+		return c.JSON(http.StatusOK, res)
+	}
 }
 
 // GetItemInfo ...
@@ -76,6 +122,11 @@ func (r *Routes) GetItemInfo(p *props.ControllerProps) echo.HandlerFunc {
 
 		return c.JSON(http.StatusOK, res)
 	}
+}
+
+// IGetController ...
+type IGetController interface {
+	Get(c echo.Context, req *GetRequest) (res *GetResponse, err error)
 }
 
 // IGetItemInfoController ...
