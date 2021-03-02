@@ -1,6 +1,6 @@
-// Package items ...
+// Package item ...
 // generated version: 1.8.0
-package items
+package item
 
 import (
 	"context"
@@ -13,33 +13,33 @@ import (
 	"github.com/rhyth-me/backend/interfaces/wrapper"
 )
 
-// GetItemInfoController ...
-type GetItemInfoController struct {
+// GetController ...
+type GetController struct {
 	*props.ControllerProps
 }
 
-// NewGetItemInfoController ...
-func NewGetItemInfoController(cp *props.ControllerProps) *GetItemInfoController {
-	g := &GetItemInfoController{
+// NewGetController ...
+func NewGetController(cp *props.ControllerProps) *GetController {
+	g := &GetController{
 		ControllerProps: cp,
 	}
 	return g
 }
 
-// GetItemInfo ...
+// Get ...
 // @Summary WIP
 // @Description WIP
 // @Accept json
 // @Produce json
 // @Param userID path string true ""
 // @Param itemID path string true ""
-// @Success 200 {object} GetItemInfoResponse
+// @Success 200 {object} GetResponse
 // @Failure 400 {object} wrapper.APIError
 // @Failure 500 {object} wrapper.APIError
 // @Router /_userID/items/{itemID} [GET]
-func (g *GetItemInfoController) GetItemInfo(
-	c echo.Context, req *GetItemInfoRequest,
-) (res *GetItemInfoResponse, err error) {
+func (g *GetController) Get(
+	c echo.Context, req *GetRequest,
+) (res *GetResponse, err error) {
 
 	iter := g.ControllerProps.Firestore.Collection("items").
 		Where("author.id", "==", req.UserID).
@@ -61,7 +61,7 @@ func (g *GetItemInfoController) GetItemInfo(
 	var result model.Item
 	docs[0].DataTo(&result)
 
-	res = &GetItemInfoResponse{
+	res = &GetResponse{
 		Code:    http.StatusOK,
 		Message: "Success",
 		Result:  result,

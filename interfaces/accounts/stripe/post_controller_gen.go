@@ -1,6 +1,6 @@
-// Package accounts ...
+// Package stripe ...
 // generated version: 1.8.0
-package accounts
+package stripe
 
 import (
 	"net/http"
@@ -9,33 +9,32 @@ import (
 	"github.com/rhyth-me/backend/interfaces/props"
 )
 
-// PostStripeController ...
-type PostStripeController struct {
+// PostController ...
+type PostController struct {
 	*props.ControllerProps
 }
 
-// NewPostStripeController ...
-func NewPostStripeController(cp *props.ControllerProps) *PostStripeController {
-	p := &PostStripeController{
+// NewPostController ...
+func NewPostController(cp *props.ControllerProps) *PostController {
+	p := &PostController{
 		ControllerProps: cp,
 	}
 	return p
 }
 
-// PostStripe ...
+// Post ...
 // @Summary WIP
 // @Description WIP
 // @Accept json
 // @Produce json
-// @Param userID path string true ""
 // @Param email body string false ""
-// @Success 200 {object} PostStripeResponse
+// @Success 200 {object} PostResponse
 // @Failure 400 {object} wrapper.APIError
 // @Failure 500 {object} wrapper.APIError
-// @Router /_userID/accounts/stripe [POST]
-func (p *PostStripeController) PostStripe(
-	c echo.Context, req *PostStripeRequest,
-) (res *PostStripeResponse, err error) {
+// @Router /accounts/stripe [POST]
+func (p *PostController) Post(
+	c echo.Context, req *PostRequest,
+) (res *PostResponse, err error) {
 
 	/*
 		params := &stripe.AccountParams{
@@ -57,7 +56,7 @@ func (p *PostStripeController) PostStripe(
 		}
 	*/
 
-	res = &PostStripeResponse{
+	res = &PostResponse{
 		Code:        http.StatusOK,
 		Message:     "Success",
 		RedirectURL: "",
