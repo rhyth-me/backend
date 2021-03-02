@@ -1,6 +1,20 @@
 package model
 
-// User - user
+// AuthUser -
+type AuthUser struct {
+	UID string `json:"uid"`
+}
+
+// User - users collection structure.
+type User struct {
+	UID     string         `firestore:"uid" json:"-"`
+	Profile SocialProfile  `firestore:"profile" json:"profile,omitempty"`
+	Payout  PayoutSettings `firestore:"payout" json:"-"`
+}
+
+// Field Structures
+
+// SocialProfile - details of the user as displayed on the site.
 type SocialProfile struct {
 	ID              string `firestore:"id" json:"id"`
 	DisplayName     string `firestore:"displayName" json:"displayName"`
@@ -8,12 +22,7 @@ type SocialProfile struct {
 	StatusMessage   string `firestore:"statusMessage" json:"statusMessage"`
 }
 
-// AuthUser -
-type AuthUser struct {
-	UID string `json:"uid"`
-}
-
-// UserAccounts - stripe
-type UserAccounts struct {
-	Stripe string `firestore:"stripe" json:"stripe"`
+// PayoutSettings - information for withdrawal.
+type PayoutSettings struct {
+	StripeID string `firestore:"stripeId"`
 }
