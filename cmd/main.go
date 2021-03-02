@@ -32,6 +32,10 @@ func main() {
 				return next(cc)
 			}
 
+			if os.Getenv("STAGING") == "true" {
+				token.UID = "STAGING_" + token.UID
+			}
+
 			cc := &model.CustomContext{Context: c, UID: token.UID}
 			return next(cc)
 		}
