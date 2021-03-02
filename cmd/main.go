@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -12,13 +13,14 @@ import (
 	"github.com/rhyth-me/backend/interfaces"
 	"github.com/rhyth-me/backend/interfaces/props"
 	"github.com/rhyth-me/backend/pkg/firebase"
-	"github.com/rhyth-me/backend/pkg/stripe"
+	"github.com/stripe/stripe-go/v72/client"
 )
 
 func main() {
 	godotenv.Load(".env")
 
 	e := echo.New()
+	e.Pre(middleware.AddTrailingSlash())
 
 	auth := firebase.InitAuth()
 
@@ -48,13 +50,17 @@ func main() {
 
 	// firebase init
 	p.Firestore = firebase.InitFirestore()
-	p.Stripe = stripe.Init()
+
+	// stripe init
+	sc := &client.API{}
+	sc.Init(os.Getenv("STRIPE_API_KEY"), nil)
+	p.Stripe = sc
 
 	interfaces.Bootstrap(p, e, nil, os.Stdout)
 
-	fmt.Println("All routes are...")
+	fmt.Println("All endpoints are...")
 	for _, r := range e.Routes() {
-		fmt.Printf("%s %s: %s\n", r.Method, r.Path, r.Name)
+		fmt.Printf("%s %s\n", r.Method, strings.TrimRight(r.Path, "/"))
 	}
 
 	if err := e.Start(":" + os.Getenv("PORT")); err != nil {
