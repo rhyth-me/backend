@@ -10,8 +10,9 @@ import (
 	"runtime/debug"
 
 	"github.com/labstack/echo/v4"
-	"github.com/rhyth-me/backend/interfaces/_userID/accounts"
 	"github.com/rhyth-me/backend/interfaces/_userID/items"
+	itemsItemID "github.com/rhyth-me/backend/interfaces/_userID/items/_itemID"
+	"github.com/rhyth-me/backend/interfaces/accounts/stripe"
 	"github.com/rhyth-me/backend/interfaces/props"
 )
 
@@ -74,13 +75,17 @@ func Bootstrap(p *props.ControllerProps, e *echo.Echo, middlewareList Middleware
 	rootGroup := e.Group("/")
 	setMiddleware(rootGroup, "/", middleware)
 
-	accountsGroup := rootGroup.Group(":userID/accounts/")
-	setMiddleware(accountsGroup, "/:userID/accounts/", middleware)
-	accounts.NewRoutes(p, accountsGroup, opts...)
-
 	itemsGroup := rootGroup.Group(":userID/items/")
 	setMiddleware(itemsGroup, "/:userID/items/", middleware)
 	items.NewRoutes(p, itemsGroup, opts...)
+
+	itemsItemIDGroup := itemsGroup.Group(":itemID/")
+	setMiddleware(itemsItemIDGroup, "/:userID/items/:itemID/", middleware)
+	itemsItemID.NewRoutes(p, itemsItemIDGroup, opts...)
+
+	stripeGroup := rootGroup.Group("accounts/stripe/")
+	setMiddleware(stripeGroup, "/accounts/stripe/", middleware)
+	stripe.NewRoutes(p, stripeGroup, opts...)
 }
 
 func setMiddleware(group *echo.Group, path string, list MiddlewareMap) {
