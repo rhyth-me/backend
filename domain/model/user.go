@@ -1,10 +1,5 @@
 package model
 
-// AuthUser -
-type AuthUser struct {
-	UID string `json:"uid"`
-}
-
 // User - users collection structure.
 type User struct {
 	UID     string         `firestore:"uid" json:"-"`
