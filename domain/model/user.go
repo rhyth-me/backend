@@ -11,10 +11,10 @@ type User struct {
 
 // SocialProfile - details of the user as displayed on the site.
 type SocialProfile struct {
-	ID              string `firestore:"id" json:"id"`
-	DisplayName     string `firestore:"displayName" json:"displayName"`
-	ProfileImageURL string `firestore:"profileImageUrl" json:"profileImageUrl"`
-	StatusMessage   string `firestore:"statusMessage" json:"statusMessage"`
+	ID               string `firestore:"id" json:"id" validate:"gt=0,max=20"`
+	DisplayName      string `firestore:"displayName" json:"displayName" validate:"gt=0,max=20"`
+	ProfileImagePath string `firestore:"profileImagePath" json:"profileImagePath" validate:"required"`
+	StatusMessage    string `firestore:"statusMessage" json:"statusMessage" validate:"min=0,max=150"`
 }
 
 // PayoutSettings - information for withdrawal.
