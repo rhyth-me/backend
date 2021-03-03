@@ -56,10 +56,10 @@ func (g *GetController) Get(
 		user := model.User{
 			UID: uid,
 			Profile: model.SocialProfile{
-				ID:              uid,
-				DisplayName:     "名無さん",
-				ProfileImageURL: "",
-				StatusMessage:   "",
+				ID:               uid,
+				DisplayName:      "名無さん",
+				ProfileImagePath: "",
+				StatusMessage:    "",
 			},
 		}
 
