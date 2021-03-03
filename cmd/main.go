@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 
@@ -43,6 +44,17 @@ func initEchoSetting(e *echo.Echo) {
 			return next(cc)
 		}
 	})
+
+	// CORS config
+	origins := []string{"https://rhyth.me"}
+	if os.Getenv("STAGING") == "true" {
+		origins = []string{"*"}
+	}
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: origins,
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+	}))
 }
 
 func initControllerProps() *props.ControllerProps {
