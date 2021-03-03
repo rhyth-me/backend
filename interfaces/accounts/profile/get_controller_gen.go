@@ -44,7 +44,7 @@ func (g *GetController) Get(
 			"code":    http.StatusUnauthorized,
 			"message": "You need to log in.",
 		}
-		return nil, wrapper.NewAPIError(http.StatusBadRequest, body)
+		return nil, wrapper.NewAPIError(http.StatusUnauthorized, body)
 	}
 
 	// Fetch user by uid.
@@ -56,10 +56,10 @@ func (g *GetController) Get(
 		user := model.User{
 			UID: uid,
 			Profile: model.SocialProfile{
-				ID:              uid,
-				DisplayName:     "名無さん",
-				ProfileImageURL: "",
-				StatusMessage:   "",
+				ID:               uid,
+				DisplayName:      "名無さん",
+				ProfileImagePath: "",
+				StatusMessage:    "",
 			},
 		}
 
