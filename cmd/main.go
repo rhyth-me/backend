@@ -13,19 +13,20 @@ import (
 	"github.com/rhyth-me/backend/interfaces"
 	"github.com/rhyth-me/backend/interfaces/props"
 	"github.com/rhyth-me/backend/pkg/firebase"
+	"github.com/rhyth-me/backend/pkg/validator"
 	"github.com/stripe/stripe-go/v72/client"
 )
 
-func main() {
-	godotenv.Load(".env")
-
-	e := echo.New()
+func initEchoSetting(e *echo.Echo) {
+	e.Debug = true
+	e.HideBanner = true
+	e.Validator = validator.NewValidator()
 	e.Pre(middleware.AddTrailingSlash())
-
-	auth := firebase.InitAuth()
+	e.Use(middleware.Recover())
 
 	// Firebase auth - check login user
 	// uid := c.(*model.CustomContext).UID
+	auth := firebase.InitAuth()
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			token, err := auth.VerifyIDToken(context.Background(), c.Request().Header.Get("X-Token"))
@@ -42,9 +43,9 @@ func main() {
 			return next(cc)
 		}
 	})
+}
 
-	e.Debug = true
-	e.Use(middleware.Recover())
+func initControllerProps() *props.ControllerProps {
 
 	p := new(props.ControllerProps)
 
@@ -56,7 +57,17 @@ func main() {
 	sc.Init(os.Getenv("STRIPE_API_KEY"), nil)
 	p.Stripe = sc
 
-	interfaces.Bootstrap(p, e, nil, os.Stdout)
+	return p
+}
+
+func main() {
+	godotenv.Load(".env")
+
+	e := echo.New()
+	initEchoSetting(e)
+
+	props := initControllerProps()
+	interfaces.Bootstrap(props, e, nil, os.Stdout)
 
 	fmt.Println("All endpoints are...")
 	for _, r := range e.Routes() {
