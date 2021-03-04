@@ -41,7 +41,7 @@ func (g *GetController) Get(
 ) (res *GetResponse, err error) {
 
 	iter := g.ControllerProps.Firestore.Collection("items").
-		Select("snippet.thumbnailUrl", "snippet.musicTitle", "snippet.price", "statistics").
+		Select("id", "snippet.thumbnailUrl", "snippet.musicTitle", "snippet.price", "statistics", "author.id").
 		Where("author.id", "==", req.UserID).
 		Documents(context.Background())
 
