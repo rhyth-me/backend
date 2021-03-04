@@ -1,6 +1,6 @@
 package model
 
-// Item - item
+// Item - item collection
 type Item struct {
 	ID         string         `firestore:"id" json:"id"`
 	Snippet    ItemSnippet    `firestore:"snippet" json:"snippet,omitempty"`
@@ -8,12 +8,14 @@ type Item struct {
 	Author     SocialProfile  `firestore:"author" json:"author,omitempty"`
 }
 
+// ItemSnippet - item datails
 type ItemSnippet struct {
-	Title        string   `firestore:"title" json:"title,omitempty"`
-	ThumbnailURL string   `firestore:"thumbnailUrl" json:"thumbnailUrl,omitempty"`
-	MusicTitle   string   `firestore:"musicTitle" json:"musicTitle,omitempty"`
-	Price        int      `firestore:"price" json:"price,omitempty"`
-	Tags         []string `firestore:"tags" json:"tags,omitempty"`
+	ThumbnailImagePath string   `firestore:"thumbnailImagePath" json:"thumbnailImagePath,omitempty"`
+	Title              string   `firestore:"title" json:"title,omitempty" validate:"required,max=40"`
+	MusicTitle         string   `firestore:"musicTitle" json:"musicTitle,omitempty" validate:"required,max=40"`
+	Summary            string   `firestore:"summary" json:"summary,omitempty" validate:"max=200"`
+	Price              int      `firestore:"price" json:"price,omitempty" validate:"min=0,max=10000000"`
+	Tags               []string `firestore:"tags" json:"tags,omitempty" validate:"unique"`
 }
 
 type ItemStatistics struct {
