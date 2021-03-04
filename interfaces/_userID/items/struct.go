@@ -13,3 +13,16 @@ type GetResponse struct {
 	Message string       `json:"message,omitempty"`
 	Result  []model.Item `json:"result,omitempty"`
 }
+
+// PutRequest - register new item
+type PutRequest struct {
+	UserID  string            `json:"userID" param:"userID"`
+	Details model.ItemSnippet `json:"details"`
+}
+
+// PutResponse -
+type PutResponse struct {
+	Code    int        `json:"code"`
+	Message string     `json:"message,omitempty"`
+	Result  model.Item `json:"result,omitempty"`
+}
