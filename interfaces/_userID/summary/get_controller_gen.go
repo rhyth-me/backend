@@ -1,12 +1,11 @@
-// Package items ...
+// Package summary ...
 // generated version: 1.8.0
-package items
+package summary
 
 import (
 	"context"
 	"net/http"
 
-	"github.com/golang/glog"
 	"github.com/labstack/echo/v4"
 	"github.com/rhyth-me/backend/domain/model"
 	"github.com/rhyth-me/backend/interfaces/props"
@@ -35,19 +34,21 @@ func NewGetController(cp *props.ControllerProps) *GetController {
 // @Success 200 {object} GetResponse
 // @Failure 400 {object} wrapper.APIError
 // @Failure 500 {object} wrapper.APIError
-// @Router /_userID/items [GET]
+// @Router /_userID/summary [GET]
 func (g *GetController) Get(
 	c echo.Context, req *GetRequest,
 ) (res *GetResponse, err error) {
+	// Fetch social profile by uid.
 
-	iter := g.ControllerProps.Firestore.Collection("items").
-		Select("id", "snippet.thumbnailUrl", "snippet.musicTitle", "snippet.price", "statistics", "author.id").
-		Where("author.id", "==", req.UserID).
-		Documents(context.Background())
+	ctx := context.Background()
+	iter := g.ControllerProps.Firestore.Collection("users").
+		Select("profile").
+		Where("profile.id", "==", req.UserID).
+		Documents(ctx)
 
 	docs, err := iter.GetAll()
 	if err != nil {
-		glog.Errorln("Error")
+		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 	}
 
 	if len(docs) < 1 {
@@ -55,15 +56,11 @@ func (g *GetController) Get(
 			"code":    http.StatusNotFound,
 			"message": "Not found.",
 		}
-		return nil, wrapper.NewAPIError(http.StatusBadRequest, body)
+		return nil, wrapper.NewAPIError(http.StatusNotFound, body)
 	}
 
-	var result []model.Item
-	var doc model.Item
-	for i := 0; i < len(docs); i++ {
-		docs[i].DataTo(&doc)
-		result = append(result, doc)
-	}
+	var result model.User
+	docs[0].DataTo(&result)
 
 	res = &GetResponse{
 		Code:    http.StatusOK,
