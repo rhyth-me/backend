@@ -3,14 +3,12 @@
 package summary
 
 import (
-	"context"
 	"net/http"
-	"os"
 
 	"github.com/labstack/echo/v4"
-	"github.com/rhyth-me/backend/domain/model"
 	"github.com/rhyth-me/backend/interfaces/props"
 	"github.com/rhyth-me/backend/interfaces/wrapper"
+	"github.com/rhyth-me/backend/pkg/firestore"
 )
 
 // GetController ...
@@ -41,32 +39,20 @@ func (g *GetController) Get(
 ) (res *GetResponse, err error) {
 	// Fetch social profile by uid.
 
-	ctx := context.Background()
-	iter := g.ControllerProps.Firestore.Collection(os.Getenv("USERS_COLLECTION")).
-		Select("profile").
-		Where("profile.screenName", "==", req.UserID).
-		Documents(ctx)
-
-	docs, err := iter.GetAll()
+	author, err := firestore.GetUserByScreenName(g.ControllerProps.Firestore, req.UserID)
 	if err != nil {
 		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 	}
-
-	if len(docs) < 1 {
-		body := map[string]interface{}{
-			"code":    http.StatusNotFound,
-			"message": "Not found.",
-		}
-		return nil, wrapper.NewAPIError(http.StatusNotFound, body)
+	if author == nil {
+		return nil, wrapper.NewAPIError(http.StatusNotFound)
 	}
-
-	var result model.User
-	docs[0].DataTo(&result)
 
 	res = &GetResponse{
 		Code:    http.StatusOK,
 		Message: "Success",
-		Result:  result,
+		Result: GetResponseResult{
+			Profile: author.Profile,
+		},
 	}
 
 	return res, nil

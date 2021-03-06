@@ -43,8 +43,8 @@ func (p *PutController) Put(
 	c echo.Context, req *PutRequest,
 ) (res *PutResponse, err error) {
 
-	user := authority.GetIdentifier(c)
-	if user.UID == "" || user.ScreenName != req.UserID {
+	author := authority.GetIdentifier(c)
+	if author.UID == "" || author.ScreenName != req.UserID {
 		body := map[string]interface{}{
 			"code":    http.StatusUnauthorized,
 			"message": "You need to log in.",
@@ -54,21 +54,12 @@ func (p *PutController) Put(
 
 	ctx := context.Background()
 
-	// Fetch auth user's social profile
-	dsnap, err := p.ControllerProps.Firestore.Collection(os.Getenv("USERS_COLLECTION")).Doc(user.Google.ID).Get(ctx)
-	if err != nil {
-		return nil, wrapper.NewAPIError(http.StatusNotFound)
-	}
-	var author model.User
-	dsnap.DataTo(&author)
-
 	// Generate itemID
 	id := random.String(8)
-
 	recode := model.Item{
 		ID:      id,
 		Snippet: req.Details,
-		Author:  author.Profile,
+		Author:  author.Google.ID,
 	}
 
 	// Add recode

@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/golang/glog"
 	"github.com/labstack/echo/v4"
 	"github.com/rhyth-me/backend/domain/model"
 	"github.com/rhyth-me/backend/interfaces/props"
 	"github.com/rhyth-me/backend/interfaces/wrapper"
+	"github.com/rhyth-me/backend/pkg/firestore"
 )
 
 // GetController ...
@@ -41,14 +41,22 @@ func (g *GetController) Get(
 	c echo.Context, req *GetRequest,
 ) (res *GetResponse, err error) {
 
+	author, err := firestore.GetUserByScreenName(g.ControllerProps.Firestore, req.UserID)
+	if err != nil {
+		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
+	}
+	if author == nil {
+		return nil, wrapper.NewAPIError(http.StatusNotFound)
+	}
+
 	iter := g.ControllerProps.Firestore.Collection(os.Getenv("ITEMS_COLLECTION")).
-		Select("id", "snippet.thumbnailUrl", "snippet.musicTitle", "snippet.price", "statistics", "author.screenName").
-		Where("author.screenName", "==", req.UserID).
+		Select("id", "snippet.thumbnailUrl", "snippet.musicTitle", "snippet.price", "statistics").
+		Where("author", "==", author.Google.ID).
 		Documents(context.Background())
 
 	docs, err := iter.GetAll()
 	if err != nil {
-		glog.Errorln("Error")
+		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 	}
 
 	if len(docs) < 1 {
@@ -56,7 +64,7 @@ func (g *GetController) Get(
 			"code":    http.StatusNotFound,
 			"message": "Not found.",
 		}
-		return nil, wrapper.NewAPIError(http.StatusBadRequest, body)
+		return nil, wrapper.NewAPIError(http.StatusNotFound, body)
 	}
 
 	var result []model.Item
