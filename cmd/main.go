@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -10,9 +9,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/rhyth-me/backend/domain/model"
 	"github.com/rhyth-me/backend/interfaces"
 	"github.com/rhyth-me/backend/interfaces/props"
+	"github.com/rhyth-me/backend/pkg/authority"
 	"github.com/rhyth-me/backend/pkg/firebase"
 	"github.com/rhyth-me/backend/pkg/validator"
 	"github.com/stripe/stripe-go/v72/client"
@@ -26,21 +25,9 @@ func initEchoSetting(e *echo.Echo) {
 	e.Use(middleware.Recover())
 
 	// Firebase auth - check login user
-	// uid := c.(*model.CustomContext).UID
-	auth := firebase.InitAuth()
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			token, err := auth.VerifyIDToken(context.Background(), c.Request().Header.Get("X-Token"))
-			if err != nil {
-				cc := &model.CustomContext{Context: c}
-				return next(cc)
-			}
-
-			if os.Getenv("STAGING") == "true" {
-				token.UID = "STAGING_" + token.UID
-			}
-
-			cc := &model.CustomContext{Context: c, UID: token.UID}
+			cc := authority.Identify(c, c.Request().Header.Get("X-Token"))
 			return next(cc)
 		}
 	})
@@ -63,6 +50,7 @@ func initControllerProps() *props.ControllerProps {
 
 	// firebase init
 	p.Firestore = firebase.InitFirestore()
+	p.Auth = firebase.InitAuth()
 
 	// stripe init
 	sc := &client.API{}
