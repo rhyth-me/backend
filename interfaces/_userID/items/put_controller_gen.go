@@ -54,7 +54,7 @@ func (p *PutController) Put(
 	ctx := context.Background()
 
 	// Fetch auth user's social profile
-	dsnap, err := p.ControllerProps.Firestore.Collection("users").Doc(user.UID).Get(ctx)
+	dsnap, err := p.ControllerProps.Firestore.Collection("users").Doc(user.Google.ID).Get(ctx)
 	if err != nil {
 		return nil, wrapper.NewAPIError(http.StatusNotFound)
 	}

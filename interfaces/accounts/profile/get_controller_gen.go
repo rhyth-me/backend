@@ -50,21 +50,22 @@ func (g *GetController) Get(
 
 	// Fetch user by uid.
 	ctx := context.Background()
-	dsnap, err := g.ControllerProps.Firestore.Collection("users").Doc(user.UID).Get(ctx)
+	dsnap, err := g.ControllerProps.Firestore.Collection("users").Doc(user.Google.ID).Get(ctx)
 
 	// If uid does not exist, create data.
 	if err != nil {
 		recode := model.User{
 			UID: user.UID,
 			Profile: model.SocialProfile{
-				ScreenName:       user.UID,
+				ScreenName:       user.Google.ID,
 				DisplayName:      "名無さん",
 				ProfileImagePath: "",
 				StatusMessage:    "",
 			},
+			Google: user.Google,
 		}
 
-		_, err := g.ControllerProps.Firestore.Collection("users").Doc(user.UID).Set(ctx, recode)
+		_, err := g.ControllerProps.Firestore.Collection("users").Doc(user.Google.ID).Set(ctx, recode)
 		if err != nil {
 			return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 		}
