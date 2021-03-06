@@ -11,7 +11,7 @@ type User struct {
 
 // SocialProfile - details of the user as displayed on the site.
 type SocialProfile struct {
-	ID               string `firestore:"id" json:"id,omitempty" validate:"gt=0,max=20"`
+	ScreenName       string `firestore:"screenName" json:"screenName,omitempty" validate:"gt=0,max=20"`
 	DisplayName      string `firestore:"displayName" json:"displayName,omitempty" validate:"gt=0,max=20"`
 	ProfileImagePath string `firestore:"profileImagePath" json:"profileImagePath,omitempty" validate:"required"`
 	StatusMessage    string `firestore:"statusMessage" json:"statusMessage,omitempty" validate:"min=0,max=150"`

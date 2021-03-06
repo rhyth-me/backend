@@ -42,7 +42,7 @@ func (g *GetController) Get(
 ) (res *GetResponse, err error) {
 
 	iter := g.ControllerProps.Firestore.Collection("items").
-		Where("author.id", "==", req.UserID).
+		Where("author.screenName", "==", req.UserID).
 		Where("id", "==", req.ItemID).Documents(context.Background())
 
 	docs, err := iter.GetAll()

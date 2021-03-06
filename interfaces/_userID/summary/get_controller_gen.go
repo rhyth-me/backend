@@ -43,7 +43,7 @@ func (g *GetController) Get(
 	ctx := context.Background()
 	iter := g.ControllerProps.Firestore.Collection("users").
 		Select("profile").
-		Where("profile.id", "==", req.UserID).
+		Where("profile.screenName", "==", req.UserID).
 		Documents(ctx)
 
 	docs, err := iter.GetAll()
