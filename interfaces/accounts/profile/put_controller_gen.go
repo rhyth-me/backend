@@ -8,9 +8,9 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/labstack/echo/v4"
-	"github.com/rhyth-me/backend/domain/model"
 	"github.com/rhyth-me/backend/interfaces/props"
 	"github.com/rhyth-me/backend/interfaces/wrapper"
+	"github.com/rhyth-me/backend/pkg/authority"
 )
 
 // PutController ...
@@ -40,8 +40,8 @@ func (p *PutController) Put(
 	c echo.Context, req *PutRequest,
 ) (res *PutResponse, err error) {
 
-	uid := c.(*model.CustomContext).UID
-	if uid == "" {
+	user := authority.GetIdentifier(c)
+	if user.UID == "" {
 		body := map[string]interface{}{
 			"code":    http.StatusUnauthorized,
 			"message": "You need to log in.",
@@ -51,7 +51,7 @@ func (p *PutController) Put(
 
 	// Fetch user by uid.
 	ctx := context.Background()
-	_, err = p.ControllerProps.Firestore.Collection("users").Doc(uid).Update(ctx, []firestore.Update{
+	_, err = p.ControllerProps.Firestore.Collection("users").Doc(user.UID).Update(ctx, []firestore.Update{
 		{
 			Path:  "profile",
 			Value: req.Profile,
