@@ -17,6 +17,6 @@ type User struct {
 
 // Google - Authenticated user's account.
 type Google struct {
-	ID    string
-	Email string
+	ID    string `firestore:"id" json:"-"`
+	Email string `firestore:"email"  json:"-"`
 }

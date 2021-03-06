@@ -5,7 +5,7 @@ type Item struct {
 	ID         string         `firestore:"id" json:"id"`
 	Snippet    ItemSnippet    `firestore:"snippet" json:"snippet,omitempty"`
 	Statistics ItemStatistics `firestore:"statistics" json:"statistics,omitempty"`
-	Author     SocialProfile  `firestore:"author" json:"author,omitempty"`
+	Author     string         `firestore:"author" json:"-"`
 }
 
 // ItemSnippet - item datails
@@ -18,6 +18,7 @@ type ItemSnippet struct {
 	Tags               []string `firestore:"tags" json:"tags,omitempty" validate:"unique"`
 }
 
+// ItemStatistics - item statistics
 type ItemStatistics struct {
 	Rating        float64 `firestore:"rating" json:"rating,omitempty"`
 	DownloadCount int     `firestore:"downloadCount" json:"downloadCount,omitempty"`

@@ -12,6 +12,7 @@ import (
 	"github.com/rhyth-me/backend/domain/model"
 	"github.com/rhyth-me/backend/interfaces/props"
 	"github.com/rhyth-me/backend/interfaces/wrapper"
+	"github.com/rhyth-me/backend/pkg/firestore"
 )
 
 // GetController ...
@@ -42,8 +43,16 @@ func (g *GetController) Get(
 	c echo.Context, req *GetRequest,
 ) (res *GetResponse, err error) {
 
+	author, err := firestore.GetUserByScreenName(g.ControllerProps.Firestore, req.UserID)
+	if err != nil {
+		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
+	}
+	if author == nil {
+		return nil, wrapper.NewAPIError(http.StatusNotFound)
+	}
+
 	iter := g.ControllerProps.Firestore.Collection(os.Getenv("ITEMS_COLLECTION")).
-		Where("author.screenName", "==", req.UserID).
+		Where("author", "==", author.Google.ID).
 		Where("id", "==", req.ItemID).Documents(context.Background())
 
 	docs, err := iter.GetAll()
