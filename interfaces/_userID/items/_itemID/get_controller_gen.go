@@ -5,6 +5,7 @@ package item
 import (
 	"context"
 	"net/http"
+	"os"
 
 	"github.com/golang/glog"
 	"github.com/labstack/echo/v4"
@@ -41,7 +42,7 @@ func (g *GetController) Get(
 	c echo.Context, req *GetRequest,
 ) (res *GetResponse, err error) {
 
-	iter := g.ControllerProps.Firestore.Collection("items").
+	iter := g.ControllerProps.Firestore.Collection(os.Getenv("ITEMS_COLLECTION")).
 		Where("author.screenName", "==", req.UserID).
 		Where("id", "==", req.ItemID).Documents(context.Background())
 

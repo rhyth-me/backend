@@ -5,6 +5,7 @@ package items
 import (
 	"context"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rhyth-me/backend/domain/model"
@@ -54,7 +55,7 @@ func (p *PutController) Put(
 	ctx := context.Background()
 
 	// Fetch auth user's social profile
-	dsnap, err := p.ControllerProps.Firestore.Collection("users").Doc(user.Google.ID).Get(ctx)
+	dsnap, err := p.ControllerProps.Firestore.Collection(os.Getenv("USERS_COLLECTION")).Doc(user.Google.ID).Get(ctx)
 	if err != nil {
 		return nil, wrapper.NewAPIError(http.StatusNotFound)
 	}
@@ -71,7 +72,7 @@ func (p *PutController) Put(
 	}
 
 	// Add recode
-	_, _, err = p.ControllerProps.Firestore.Collection("items").Add(ctx, recode)
+	_, _, err = p.ControllerProps.Firestore.Collection(os.Getenv("ITEMS_COLLECTION")).Add(ctx, recode)
 	if err != nil {
 		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 	}
