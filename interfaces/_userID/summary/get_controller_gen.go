@@ -5,6 +5,7 @@ package summary
 import (
 	"context"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rhyth-me/backend/domain/model"
@@ -41,7 +42,7 @@ func (g *GetController) Get(
 	// Fetch social profile by uid.
 
 	ctx := context.Background()
-	iter := g.ControllerProps.Firestore.Collection("users").
+	iter := g.ControllerProps.Firestore.Collection(os.Getenv("USERS_COLLECTION")).
 		Select("profile").
 		Where("profile.screenName", "==", req.UserID).
 		Documents(ctx)

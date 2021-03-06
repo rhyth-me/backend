@@ -5,6 +5,7 @@ package profile
 import (
 	"context"
 	"net/http"
+	"os"
 
 	"cloud.google.com/go/firestore"
 	"github.com/labstack/echo/v4"
@@ -51,7 +52,7 @@ func (p *PutController) Put(
 
 	// Fetch user by uid.
 	ctx := context.Background()
-	_, err = p.ControllerProps.Firestore.Collection("users").Doc(user.Google.ID).Update(ctx, []firestore.Update{
+	_, err = p.ControllerProps.Firestore.Collection(os.Getenv("USERS_COLLECTION")).Doc(user.Google.ID).Update(ctx, []firestore.Update{
 		{
 			Path:  "profile",
 			Value: req.Profile,

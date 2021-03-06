@@ -5,6 +5,7 @@ package profile
 import (
 	"context"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rhyth-me/backend/domain/model"
@@ -50,7 +51,7 @@ func (g *GetController) Get(
 
 	// Fetch user by uid.
 	ctx := context.Background()
-	dsnap, err := g.ControllerProps.Firestore.Collection("users").Doc(user.Google.ID).Get(ctx)
+	dsnap, err := g.ControllerProps.Firestore.Collection(os.Getenv("USERS_COLLECTION")).Doc(user.Google.ID).Get(ctx)
 
 	// If uid does not exist, create data.
 	if err != nil {
@@ -65,7 +66,7 @@ func (g *GetController) Get(
 			Google: user.Google,
 		}
 
-		_, err := g.ControllerProps.Firestore.Collection("users").Doc(user.Google.ID).Set(ctx, recode)
+		_, err := g.ControllerProps.Firestore.Collection(os.Getenv("USERS_COLLECTION")).Doc(user.Google.ID).Set(ctx, recode)
 		if err != nil {
 			return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 		}
