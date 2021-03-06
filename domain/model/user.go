@@ -1,10 +1,13 @@
 package model
 
+import "github.com/rhyth-me/backend/pkg/authority"
+
 // User - users collection structure.
 type User struct {
-	UID     string         `firestore:"uid" json:"-"`
-	Profile SocialProfile  `firestore:"profile" json:"profile,omitempty"`
-	Payout  PayoutSettings `firestore:"payout" json:"-"`
+	UID     string           `firestore:"uid" json:"-"`
+	Google  authority.Google `firestore:"google" json:"-"`
+	Profile SocialProfile    `firestore:"profile" json:"profile,omitempty"`
+	Payout  PayoutSettings   `firestore:"payout" json:"-"`
 }
 
 // Field Structures
