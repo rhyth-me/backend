@@ -57,7 +57,7 @@ func (g *GetController) Get(
 		recode := model.User{
 			UID: user.UID,
 			Profile: model.SocialProfile{
-				ID:               user.UID,
+				ScreenName:       user.UID,
 				DisplayName:      "名無さん",
 				ProfileImagePath: "",
 				StatusMessage:    "",
@@ -70,7 +70,7 @@ func (g *GetController) Get(
 		}
 
 		// Add custom claims
-		claims := map[string]interface{}{"screen_name": recode.Profile.ID}
+		claims := map[string]interface{}{"screen_name": recode.Profile.ScreenName}
 		err = g.ControllerProps.Auth.SetCustomUserClaims(ctx, user.UID, claims)
 		if err != nil {
 			return nil, wrapper.NewAPIError(http.StatusInternalServerError)

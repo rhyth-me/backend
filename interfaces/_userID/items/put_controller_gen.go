@@ -43,7 +43,7 @@ func (p *PutController) Put(
 ) (res *PutResponse, err error) {
 
 	user := authority.GetIdentifier(c)
-	if user.UID == "" || user.UID != req.UserID {
+	if user.UID == "" || user.ScreenName != req.UserID {
 		body := map[string]interface{}{
 			"code":    http.StatusUnauthorized,
 			"message": "You need to log in.",
