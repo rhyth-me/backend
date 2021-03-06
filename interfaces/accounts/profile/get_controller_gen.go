@@ -10,6 +10,7 @@ import (
 	"github.com/rhyth-me/backend/domain/model"
 	"github.com/rhyth-me/backend/interfaces/props"
 	"github.com/rhyth-me/backend/interfaces/wrapper"
+	"github.com/rhyth-me/backend/pkg/authority"
 )
 
 // GetController ...
@@ -38,8 +39,8 @@ func (g *GetController) Get(
 	c echo.Context, req *GetRequest,
 ) (res *GetResponse, err error) {
 
-	uid := c.(*model.CustomContext).UID
-	if uid == "" {
+	user := authority.GetIdentifier(c)
+	if user.UID == "" {
 		body := map[string]interface{}{
 			"code":    http.StatusUnauthorized,
 			"message": "You need to log in.",
@@ -49,21 +50,28 @@ func (g *GetController) Get(
 
 	// Fetch user by uid.
 	ctx := context.Background()
-	dsnap, err := g.ControllerProps.Firestore.Collection("users").Doc(uid).Get(ctx)
+	dsnap, err := g.ControllerProps.Firestore.Collection("users").Doc(user.UID).Get(ctx)
 
 	// If uid does not exist, create data.
 	if err != nil {
-		user := model.User{
-			UID: uid,
+		recode := model.User{
+			UID: user.UID,
 			Profile: model.SocialProfile{
-				ID:               uid,
+				ID:               user.UID,
 				DisplayName:      "名無さん",
 				ProfileImagePath: "",
 				StatusMessage:    "",
 			},
 		}
 
-		_, err := g.ControllerProps.Firestore.Collection("users").Doc(uid).Set(ctx, user)
+		_, err := g.ControllerProps.Firestore.Collection("users").Doc(user.UID).Set(ctx, recode)
+		if err != nil {
+			return nil, wrapper.NewAPIError(http.StatusInternalServerError)
+		}
+
+		// Add custom claims
+		claims := map[string]interface{}{"screen_name": recode.Profile.ID}
+		err = g.ControllerProps.Auth.SetCustomUserClaims(ctx, user.UID, claims)
 		if err != nil {
 			return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 		}
@@ -71,19 +79,19 @@ func (g *GetController) Get(
 		res = &GetResponse{
 			Code:    http.StatusOK,
 			Message: "Success",
-			Result:  user.Profile,
+			Result:  recode.Profile,
 		}
 
 		return res, nil
 	}
 
-	var user model.User
-	dsnap.DataTo(&user)
+	var me model.User
+	dsnap.DataTo(&me)
 
 	res = &GetResponse{
 		Code:    http.StatusOK,
 		Message: "Success",
-		Result:  user.Profile,
+		Result:  me.Profile,
 	}
 
 	return res, nil

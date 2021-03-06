@@ -10,6 +10,7 @@ import (
 	"github.com/rhyth-me/backend/domain/model"
 	"github.com/rhyth-me/backend/interfaces/props"
 	"github.com/rhyth-me/backend/interfaces/wrapper"
+	"github.com/rhyth-me/backend/pkg/authority"
 	"github.com/rhyth-me/backend/pkg/random"
 )
 
@@ -41,8 +42,8 @@ func (p *PutController) Put(
 	c echo.Context, req *PutRequest,
 ) (res *PutResponse, err error) {
 
-	uid := c.(*model.CustomContext).UID
-	if uid == "" || uid != req.UserID {
+	user := authority.GetIdentifier(c)
+	if user.UID == "" || user.UID != req.UserID {
 		body := map[string]interface{}{
 			"code":    http.StatusUnauthorized,
 			"message": "You need to log in.",
@@ -53,12 +54,12 @@ func (p *PutController) Put(
 	ctx := context.Background()
 
 	// Fetch auth user's social profile
-	dsnap, err := p.ControllerProps.Firestore.Collection("users").Doc(uid).Get(ctx)
+	dsnap, err := p.ControllerProps.Firestore.Collection("users").Doc(user.UID).Get(ctx)
 	if err != nil {
 		return nil, wrapper.NewAPIError(http.StatusNotFound)
 	}
-	var user model.User
-	dsnap.DataTo(&user)
+	var author model.User
+	dsnap.DataTo(&author)
 
 	// Generate itemID
 	id := random.String(8)
@@ -66,7 +67,7 @@ func (p *PutController) Put(
 	recode := model.Item{
 		ID:      id,
 		Snippet: req.Details,
-		Author:  user.Profile,
+		Author:  author.Profile,
 	}
 
 	// Add recode
