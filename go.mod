@@ -1,6 +1,6 @@
 module github.com/rhyth-me/backend
 
-go 1.14
+go 1.15
 
 require (
 	cloud.google.com/go/firestore v1.5.0
@@ -11,7 +11,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/labstack/echo/v4 v4.2.0
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/stripe/stripe-go/v72 v72.35.0
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.40.0
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
