@@ -50,7 +50,7 @@ func (r *Routes) GetItems(p *props.ControllerProps) echo.HandlerFunc {
 		if bindable {
 			req = new(GetItemsRequest)
 			if err := c.Bind(req); err != nil {
-				log.Printf("failed to JSON binding(/_userID/items): %+v", err)
+				log.Printf("failed to JSON binding(/users/{userID}/items): %+v", err)
 				return c.JSON(http.StatusBadRequest, map[string]interface{}{
 					"code":    http.StatusBadRequest,
 					"message": "invalid request.",
@@ -95,7 +95,7 @@ func (r *Routes) GetSummary(p *props.ControllerProps) echo.HandlerFunc {
 		if bindable {
 			req = new(GetSummaryRequest)
 			if err := c.Bind(req); err != nil {
-				log.Printf("failed to JSON binding(/_userID/summary): %+v", err)
+				log.Printf("failed to JSON binding(/users/{userID}/summary): %+v", err)
 				return c.JSON(http.StatusBadRequest, map[string]interface{}{
 					"code":    http.StatusBadRequest,
 					"message": "invalid request.",

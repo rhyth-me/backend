@@ -11,10 +11,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/rhyth-me/backend/api"
-	UserID "github.com/rhyth-me/backend/api/_userID"
 	"github.com/rhyth-me/backend/api/accounts"
 	"github.com/rhyth-me/backend/api/apigen/props"
 	"github.com/rhyth-me/backend/api/items"
+	usersUserID "github.com/rhyth-me/backend/api/users/_userID"
 )
 
 // MiddlewareList ...
@@ -77,10 +77,6 @@ func Bootstrap(p *props.ControllerProps, e *echo.Echo, middlewareList Middleware
 	setMiddleware(rootGroup, "/", middleware)
 	api.NewRoutes(p, rootGroup, opts...)
 
-	UserIDGroup := rootGroup.Group(":userID/")
-	setMiddleware(UserIDGroup, "/:userID/", middleware)
-	UserID.NewRoutes(p, UserIDGroup, opts...)
-
 	accountsGroup := rootGroup.Group("accounts/")
 	setMiddleware(accountsGroup, "/accounts/", middleware)
 	accounts.NewRoutes(p, accountsGroup, opts...)
@@ -88,6 +84,10 @@ func Bootstrap(p *props.ControllerProps, e *echo.Echo, middlewareList Middleware
 	itemsGroup := rootGroup.Group("items/")
 	setMiddleware(itemsGroup, "/items/", middleware)
 	items.NewRoutes(p, itemsGroup, opts...)
+
+	usersUserIDGroup := rootGroup.Group("users/:userID/")
+	setMiddleware(usersUserIDGroup, "/users/:userID/", middleware)
+	usersUserID.NewRoutes(p, usersUserIDGroup, opts...)
 }
 
 func setMiddleware(group *echo.Group, path string, list MiddlewareMap) {
