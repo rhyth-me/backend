@@ -1,4 +1,4 @@
-package accounts
+package account
 
 import "github.com/rhyth-me/backend/domain/model"
 

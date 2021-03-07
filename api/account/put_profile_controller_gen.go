@@ -1,6 +1,6 @@
-// Package accounts ...
+// Package account ...
 // generated version: 2.0.0-alpha2
-package accounts
+package account
 
 import (
 	"context"
