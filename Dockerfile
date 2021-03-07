@@ -3,7 +3,7 @@ FROM golang:stretch AS builder
 WORKDIR /go/src/app
 COPY . .
 ENV GO113MODULE=on
-RUN go build -o server ./cmd/main.go
+RUN go build -o server ./cmd/*.go
 
 #final stage
 FROM gcr.io/distroless/base
