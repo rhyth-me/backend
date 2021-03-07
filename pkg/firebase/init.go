@@ -9,7 +9,8 @@ import (
 	"google.golang.org/api/option"
 )
 
-func initFirebase() *firebase.App {
+// Init - setup firebase client
+func Init() *firebase.App {
 	opt := option.WithCredentialsJSON([]byte(os.Getenv("SERVICE_ACCOUNT_KEY")))
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
