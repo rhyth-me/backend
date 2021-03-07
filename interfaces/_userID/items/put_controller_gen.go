@@ -59,7 +59,9 @@ func (p *PutController) Put(
 	recode := model.Item{
 		ID:      id,
 		Snippet: req.Details,
-		Author:  author.Google.ID,
+		Author: model.ItemAuthor{
+			GoogleID: author.Google.ID,
+		},
 	}
 
 	// Add recode
