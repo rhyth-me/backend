@@ -5,7 +5,13 @@ type Item struct {
 	ID         string         `firestore:"id" json:"id"`
 	Snippet    ItemSnippet    `firestore:"snippet" json:"snippet,omitempty"`
 	Statistics ItemStatistics `firestore:"statistics" json:"statistics,omitempty"`
-	Author     string         `firestore:"author" json:"-"`
+	Author     ItemAuthor     `firestore:"author" json:"author"`
+}
+
+// ItemAuthor - item author
+type ItemAuthor struct {
+	GoogleID string        `firestore:"googleId" json:"-"`
+	Profile  SocialProfile `firestore:"-" json:"profile"`
 }
 
 // ItemSnippet - item datails

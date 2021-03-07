@@ -52,7 +52,7 @@ func (g *GetController) Get(
 	}
 
 	iter := g.ControllerProps.Firestore.Collection(os.Getenv("ITEMS_COLLECTION")).
-		Where("author", "==", author.Google.ID).
+		Where("author.googleId", "==", author.Google.ID).
 		Where("id", "==", req.ItemID).Documents(context.Background())
 
 	docs, err := iter.GetAll()
@@ -70,6 +70,7 @@ func (g *GetController) Get(
 
 	var result model.Item
 	docs[0].DataTo(&result)
+	result.Author.Profile = author.Profile
 
 	res = &GetResponse{
 		Code:    http.StatusOK,

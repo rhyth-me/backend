@@ -4,6 +4,7 @@ package items
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -51,7 +52,7 @@ func (g *GetController) Get(
 
 	iter := g.ControllerProps.Firestore.Collection(os.Getenv("ITEMS_COLLECTION")).
 		Select("id", "snippet.thumbnailUrl", "snippet.musicTitle", "snippet.price", "statistics").
-		Where("author", "==", author.Google.ID).
+		Where("author.googleId", "==", author.Google.ID).
 		Documents(context.Background())
 
 	docs, err := iter.GetAll()
@@ -71,6 +72,8 @@ func (g *GetController) Get(
 	var doc model.Item
 	for i := 0; i < len(docs); i++ {
 		docs[i].DataTo(&doc)
+		doc.Author.Profile = author.Profile
+		fmt.Println(doc)
 		result = append(result, doc)
 	}
 
