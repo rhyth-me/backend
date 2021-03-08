@@ -36,7 +36,7 @@ func GetUserByGoogleID(googleID string) (*model.User, error) {
 	ctx := context.Background()
 
 	iter := Client.Collection(Users).
-		Where("profile.screenName", "==", googleID).
+		Where("google.id", "==", googleID).
 		Documents(ctx)
 
 	docs, err := iter.GetAll()
