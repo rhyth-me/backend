@@ -25,10 +25,11 @@ func GetUserByScreenName(sn string) (*model.User, error) {
 	}
 
 	var User *model.User
-	docs[0].DataTo(&User)
+	if err := docs[0].DataTo(&User); err != nil {
+		return nil, errors.New("Internal Server Error")
+	}
 
 	return User, nil
-
 }
 
 // GetUserByGoogleID - Fetch user by google ID.
@@ -49,10 +50,11 @@ func GetUserByGoogleID(googleID string) (*model.User, error) {
 	}
 
 	var User *model.User
-	docs[0].DataTo(&User)
+	if err := docs[0].DataTo(&User); err != nil {
+		return nil, errors.New("Internal Server Error")
+	}
 
 	return User, nil
-
 }
 
 // StoreUser - Save the user to the DB.
@@ -62,5 +64,4 @@ func StoreUser(user *model.User) (*model.User, error) {
 	_, err := Client.Collection(Users).Doc(user.Google.ID).Set(ctx, user)
 
 	return user, err
-
 }
