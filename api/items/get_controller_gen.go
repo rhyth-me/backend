@@ -51,7 +51,9 @@ func (g *GetController) Get(
 	}
 
 	var item model.Item
-	snap.DataTo(&item)
+	if err := snap.DataTo(&item); err != nil {
+		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
+	}
 
 	user, err := firestore.GetUserByGoogleID(item.Author.GoogleID)
 	if err != nil {

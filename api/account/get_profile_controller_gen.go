@@ -49,7 +49,7 @@ func (g *GetProfileController) GetProfile(
 
 	au := auth.GetAuthedUser(c)
 
-	user, err := firestore.GetUserByGoogleID(au.Google.ID)
+	user, _ := firestore.GetUserByGoogleID(au.Google.ID)
 	if user != nil {
 		res = &GetProfileResponse{
 			Code:    http.StatusOK,
