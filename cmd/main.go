@@ -9,6 +9,7 @@ import (
 	"github.com/rhyth-me/backend/api/apigen"
 	"github.com/rhyth-me/backend/pkg/firebase/auth"
 	"github.com/rhyth-me/backend/pkg/firebase/firestore"
+	"github.com/rhyth-me/backend/pkg/stripe"
 )
 
 func main() {
@@ -17,6 +18,9 @@ func main() {
 	// Init firebase
 	auth.Init()
 	firestore.Init()
+
+	// Init stripe
+	stripe.Init()
 
 	// Init echo
 	e := echo.New()
@@ -27,7 +31,6 @@ func main() {
 
 	apigen.Bootstrap(p, e, nil)
 
-	//
 	fmt.Println("All endpoints are...")
 	for _, r := range e.Routes() {
 		fmt.Printf("%s %s\n", r.Method, r.Path)
