@@ -30,6 +30,7 @@ func NewRoutes(p *props.ControllerProps, router *echo.Group, opts ...io.Writer) 
 		router: router,
 	}
 	router.GET("profile", r.GetProfile(p))
+	router.PUT("cards", r.PutCards(p))
 	router.PUT("profile", r.PutProfile(p))
 	return r
 }
@@ -64,6 +65,51 @@ func (r *Routes) GetProfile(p *props.ControllerProps) echo.HandlerFunc {
 			}
 		}
 		res, err := i.GetProfile(c, req)
+		if err != nil {
+			if xerrors.As(err, &werr) {
+				log.Printf("%+v", werr)
+				return c.JSON(werr.Status, werr.Body)
+			}
+			return err
+		}
+		if res == nil {
+			return nil
+		}
+
+		return c.JSON(http.StatusOK, res)
+	}
+}
+
+// PutCards ...
+func (r *Routes) PutCards(p *props.ControllerProps) echo.HandlerFunc {
+	i := NewPutCardsController(p)
+
+	b, ok := (interface{})(i).(interface{ AutoBind() bool })
+	bindable := !ok || b.AutoBind()
+
+	return func(c echo.Context) error {
+		var (
+			req  *PutCardsRequest
+			werr *wrapper.APIError
+		)
+
+		if bindable {
+			req = new(PutCardsRequest)
+			if err := c.Bind(req); err != nil {
+				log.Printf("failed to JSON binding(/account/cards): %+v", err)
+				return c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"code":    http.StatusBadRequest,
+					"message": "invalid request.",
+				})
+			}
+			if err := c.Validate(req); err != nil && err != echo.ErrValidatorNotRegistered {
+				if xerrors.As(err, &werr) {
+					return c.JSON(werr.Status, werr.Body)
+				}
+				return err
+			}
+		}
+		res, err := i.PutCards(c, req)
 		if err != nil {
 			if xerrors.As(err, &werr) {
 				log.Printf("%+v", werr)
@@ -127,6 +173,11 @@ func (r *Routes) PutProfile(p *props.ControllerProps) echo.HandlerFunc {
 // IGetProfileController ...
 type IGetProfileController interface {
 	GetProfile(c echo.Context, req *GetProfileRequest) (res *GetProfileResponse, err error)
+}
+
+// IPutCardsController ...
+type IPutCardsController interface {
+	PutCards(c echo.Context, req *PutCardsRequest) (res *PutCardsResponse, err error)
 }
 
 // IPutProfileController ...

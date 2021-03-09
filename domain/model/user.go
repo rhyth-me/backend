@@ -2,10 +2,10 @@ package model
 
 // User - users collection structure.
 type User struct {
-	UID     string         `firestore:"uid" json:"-"`
-	Google  Google         `firestore:"google" json:"-"`
-	Profile SocialProfile  `firestore:"profile" json:"profile,omitempty"`
-	Payout  PayoutSettings `firestore:"payout" json:"-"`
+	UID     string        `firestore:"uid" json:"-"`
+	Google  Google        `firestore:"google" json:"-"`
+	Profile SocialProfile `firestore:"profile" json:"profile,omitempty"`
+	Payment Payment       `firestore:"payment" json:"-"`
 }
 
 // Field Structures
