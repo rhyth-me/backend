@@ -13,6 +13,6 @@ type Card struct {
 	Brand    string `firestore:"brand" json:"brand"`
 	Country  string `firestore:"country" json:"country"`
 	Last4    string `firestore:"last4" json:"last4"`
-	ExpYear  string `firestore:"expYear" json:"expYear"`
-	ExpMonth string `firestore:"expMonth" json:"expMonth"`
+	ExpYear  uint16 `firestore:"expYear" json:"expYear"`
+	ExpMonth uint8  `firestore:"expMonth" json:"expMonth"`
 }
