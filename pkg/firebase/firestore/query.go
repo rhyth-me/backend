@@ -54,3 +54,13 @@ func GetUserByGoogleID(googleID string) (*model.User, error) {
 	return User, nil
 
 }
+
+// StoreUser - Save the user to the DB.
+func StoreUser(user *model.User) (*model.User, error) {
+	ctx := context.Background()
+
+	_, err := Client.Collection(Users).Doc(user.Google.ID).Set(ctx, user)
+
+	return user, err
+
+}
