@@ -11,7 +11,7 @@ var Client *client.API
 
 // Init - setup stripe client
 func Init() *client.API {
-	var apiKey string = os.Getenv("STRIPE_API_KEY")
+	apiKey := os.Getenv("STRIPE_API_KEY")
 
 	sc := &client.API{}
 	sc.Init(apiKey, nil)

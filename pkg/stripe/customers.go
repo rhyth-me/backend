@@ -7,7 +7,6 @@ import (
 
 // CreateCustomer - Create new customer on Stripe.
 func CreateCustomer(User *model.User) (*stripe.Customer, error) {
-
 	params := &stripe.CustomerParams{
 		Params: stripe.Params{
 			Metadata: map[string]string{

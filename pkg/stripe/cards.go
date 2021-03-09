@@ -7,7 +7,7 @@ import (
 	"github.com/stripe/stripe-go/v72"
 )
 
-var customerPrefix string = "cus_"
+const customerPrefix string = "cus_"
 
 // CreateCard - Create a new card on Stripe.
 func CreateCard(CustomerID string, token string) (*stripe.Card, error) {

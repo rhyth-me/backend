@@ -40,7 +40,6 @@ func NewPutCardsController(cp *props.ControllerProps) *PutCardsController {
 func (p *PutCardsController) PutCards(
 	c echo.Context, req *PutCardsRequest,
 ) (res *PutCardsResponse, err error) {
-
 	if err := auth.IsAuthedUser(c); err != nil {
 		body := map[string]string{
 			"message": err.Error(),
