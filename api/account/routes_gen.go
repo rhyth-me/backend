@@ -29,11 +29,57 @@ func NewRoutes(p *props.ControllerProps, router *echo.Group, opts ...io.Writer) 
 	r := &Routes{
 		router: router,
 	}
+	router.DELETE("cards", r.DeleteCards(p))
 	router.GET("cards", r.GetCards(p))
 	router.GET("profile", r.GetProfile(p))
 	router.PUT("cards", r.PutCards(p))
 	router.PUT("profile", r.PutProfile(p))
 	return r
+}
+
+// DeleteCards ...
+func (r *Routes) DeleteCards(p *props.ControllerProps) echo.HandlerFunc {
+	i := NewDeleteCardsController(p)
+
+	b, ok := (interface{})(i).(interface{ AutoBind() bool })
+	bindable := !ok || b.AutoBind()
+
+	return func(c echo.Context) error {
+		var (
+			req  *DeleteCardsRequest
+			werr *wrapper.APIError
+		)
+
+		if bindable {
+			req = new(DeleteCardsRequest)
+			if err := c.Bind(req); err != nil {
+				log.Printf("failed to JSON binding(/account/cards): %+v", err)
+				return c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"code":    http.StatusBadRequest,
+					"message": "invalid request.",
+				})
+			}
+			if err := c.Validate(req); err != nil && err != echo.ErrValidatorNotRegistered {
+				if xerrors.As(err, &werr) {
+					return c.JSON(werr.Status, werr.Body)
+				}
+				return err
+			}
+		}
+		res, err := i.DeleteCards(c, req)
+		if err != nil {
+			if xerrors.As(err, &werr) {
+				log.Printf("%+v", werr)
+				return c.JSON(werr.Status, werr.Body)
+			}
+			return err
+		}
+		if res == nil {
+			return nil
+		}
+
+		return c.JSON(http.StatusOK, res)
+	}
 }
 
 // GetCards ...
@@ -214,6 +260,11 @@ func (r *Routes) PutProfile(p *props.ControllerProps) echo.HandlerFunc {
 
 		return c.JSON(http.StatusOK, res)
 	}
+}
+
+// IDeleteCardsController ...
+type IDeleteCardsController interface {
+	DeleteCards(c echo.Context, req *DeleteCardsRequest) (res *DeleteCardsResponse, err error)
 }
 
 // IGetCardsController ...

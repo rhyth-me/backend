@@ -9,6 +9,9 @@ import (
 // Client - stripe client
 var Client *client.API
 
+const CustomerPrefix string = "cus_"
+const CardPrefix string = "card_"
+
 // Init - setup stripe client
 func Init() *client.API {
 	apiKey := os.Getenv("STRIPE_API_KEY")

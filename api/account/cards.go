@@ -23,3 +23,14 @@ type PutCardsResponse struct {
 	Message string     `json:"message,omitempty"`
 	Result  model.Card `json:"result,omitempty"`
 }
+
+// DeleteCardsRequest - Delete the card with the specified number.
+type DeleteCardsRequest struct {
+	CardID int `json:"cardId" validate:"min=1,max=5"`
+}
+
+// DeleteCardsResponse - Return the result of deletion.
+type DeleteCardsResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message,omitempty"`
+}
