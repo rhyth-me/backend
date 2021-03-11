@@ -32,8 +32,8 @@ func NewRoutes(p *props.ControllerProps, router *echo.Group, opts ...io.Writer) 
 	router.DELETE("cards", r.DeleteCards(p))
 	router.GET("cards", r.GetCards(p))
 	router.GET("profile", r.GetProfile(p))
+	router.PATCH("profile", r.PatchProfile(p))
 	router.PUT("cards", r.PutCards(p))
-	router.PUT("profile", r.PutProfile(p))
 	return r
 }
 
@@ -172,6 +172,51 @@ func (r *Routes) GetProfile(p *props.ControllerProps) echo.HandlerFunc {
 	}
 }
 
+// PatchProfile ...
+func (r *Routes) PatchProfile(p *props.ControllerProps) echo.HandlerFunc {
+	i := NewPatchProfileController(p)
+
+	b, ok := (interface{})(i).(interface{ AutoBind() bool })
+	bindable := !ok || b.AutoBind()
+
+	return func(c echo.Context) error {
+		var (
+			req  *PatchProfileRequest
+			werr *wrapper.APIError
+		)
+
+		if bindable {
+			req = new(PatchProfileRequest)
+			if err := c.Bind(req); err != nil {
+				log.Printf("failed to JSON binding(/account/profile): %+v", err)
+				return c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"code":    http.StatusBadRequest,
+					"message": "invalid request.",
+				})
+			}
+			if err := c.Validate(req); err != nil && err != echo.ErrValidatorNotRegistered {
+				if xerrors.As(err, &werr) {
+					return c.JSON(werr.Status, werr.Body)
+				}
+				return err
+			}
+		}
+		res, err := i.PatchProfile(c, req)
+		if err != nil {
+			if xerrors.As(err, &werr) {
+				log.Printf("%+v", werr)
+				return c.JSON(werr.Status, werr.Body)
+			}
+			return err
+		}
+		if res == nil {
+			return nil
+		}
+
+		return c.JSON(http.StatusOK, res)
+	}
+}
+
 // PutCards ...
 func (r *Routes) PutCards(p *props.ControllerProps) echo.HandlerFunc {
 	i := NewPutCardsController(p)
@@ -217,51 +262,6 @@ func (r *Routes) PutCards(p *props.ControllerProps) echo.HandlerFunc {
 	}
 }
 
-// PutProfile ...
-func (r *Routes) PutProfile(p *props.ControllerProps) echo.HandlerFunc {
-	i := NewPutProfileController(p)
-
-	b, ok := (interface{})(i).(interface{ AutoBind() bool })
-	bindable := !ok || b.AutoBind()
-
-	return func(c echo.Context) error {
-		var (
-			req  *PutProfileRequest
-			werr *wrapper.APIError
-		)
-
-		if bindable {
-			req = new(PutProfileRequest)
-			if err := c.Bind(req); err != nil {
-				log.Printf("failed to JSON binding(/account/profile): %+v", err)
-				return c.JSON(http.StatusBadRequest, map[string]interface{}{
-					"code":    http.StatusBadRequest,
-					"message": "invalid request.",
-				})
-			}
-			if err := c.Validate(req); err != nil && err != echo.ErrValidatorNotRegistered {
-				if xerrors.As(err, &werr) {
-					return c.JSON(werr.Status, werr.Body)
-				}
-				return err
-			}
-		}
-		res, err := i.PutProfile(c, req)
-		if err != nil {
-			if xerrors.As(err, &werr) {
-				log.Printf("%+v", werr)
-				return c.JSON(werr.Status, werr.Body)
-			}
-			return err
-		}
-		if res == nil {
-			return nil
-		}
-
-		return c.JSON(http.StatusOK, res)
-	}
-}
-
 // IDeleteCardsController ...
 type IDeleteCardsController interface {
 	DeleteCards(c echo.Context, req *DeleteCardsRequest) (res *DeleteCardsResponse, err error)
@@ -277,12 +277,12 @@ type IGetProfileController interface {
 	GetProfile(c echo.Context, req *GetProfileRequest) (res *GetProfileResponse, err error)
 }
 
+// IPatchProfileController ...
+type IPatchProfileController interface {
+	PatchProfile(c echo.Context, req *PatchProfileRequest) (res *PatchProfileResponse, err error)
+}
+
 // IPutCardsController ...
 type IPutCardsController interface {
 	PutCards(c echo.Context, req *PutCardsRequest) (res *PutCardsResponse, err error)
-}
-
-// IPutProfileController ...
-type IPutProfileController interface {
-	PutProfile(c echo.Context, req *PutProfileRequest) (res *PutProfileResponse, err error)
 }
