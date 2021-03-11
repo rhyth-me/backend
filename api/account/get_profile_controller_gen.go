@@ -64,10 +64,9 @@ func (g *GetProfileController) GetProfile(
 	user = &model.User{
 		UID: au.UID,
 		Profile: model.SocialProfile{
-			ScreenName:       au.Google.ID,
-			DisplayName:      "名無しさん",
-			ProfileImagePath: "/default",
-			StatusMessage:    "",
+			ScreenName:    au.Google.ID,
+			DisplayName:   "名無しさん",
+			StatusMessage: "",
 		},
 		Google: au.Google,
 	}

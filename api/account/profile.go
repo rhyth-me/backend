@@ -12,13 +12,13 @@ type GetProfileResponse struct {
 	Result  model.SocialProfile `json:"result,omitempty"`
 }
 
-// PutProfileRequest - fetch auth user's profile
-type PutProfileRequest struct {
-	Profile model.SocialProfile `json:"profile"`
+// PatchProfileRequest - update auth user's profile
+type PatchProfileRequest struct {
+	Profile model.SocialProfile `json:"profile" validate:"required"`
 }
 
-// PutProfileResponse - return auth user's profile
-type PutProfileResponse struct {
+// PatchProfileResponse - return auth user's profile
+type PatchProfileResponse struct {
 	Code    int                 `json:"code"`
 	Message string              `json:"message,omitempty"`
 	Result  model.SocialProfile `json:"result,omitempty"`
