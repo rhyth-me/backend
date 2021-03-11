@@ -18,10 +18,9 @@ type Google struct {
 
 // SocialProfile - details of the user as displayed on the site.
 type SocialProfile struct {
-	ScreenName       string `firestore:"screenName" json:"screenName" validate:"gt=0,max=25"`
-	DisplayName      string `firestore:"displayName" json:"displayName" validate:"gt=0,max=20"`
-	ProfileImagePath string `firestore:"profileImagePath" json:"profileImagePath" validate:"required"`
-	StatusMessage    string `firestore:"statusMessage" json:"statusMessage" validate:"min=0,max=150"`
+	ScreenName    string `firestore:"screenName" json:"screenName" validate:"omitempty,min=3,max=25"`
+	DisplayName   string `firestore:"displayName" json:"displayName" validate:"omitempty,min=1,max=20"`
+	StatusMessage string `firestore:"statusMessage" json:"statusMessage" validate:"omitempty,min=0,max=150"`
 }
 
 // PayoutSettings - information for withdrawal.
