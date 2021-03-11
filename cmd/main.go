@@ -13,9 +13,7 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load(".env"); err != nil {
-		panic(err)
-	}
+	_ = godotenv.Load(".env")
 
 	// Init firebase
 	auth.Init()
