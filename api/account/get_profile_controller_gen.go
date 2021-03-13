@@ -12,6 +12,7 @@ import (
 	"github.com/rhyth-me/backend/domain/model"
 	"github.com/rhyth-me/backend/pkg/firebase/auth"
 	"github.com/rhyth-me/backend/pkg/firebase/firestore"
+	"github.com/rhyth-me/backend/pkg/random"
 )
 
 // GetProfileController ...
@@ -64,9 +65,8 @@ func (g *GetProfileController) GetProfile(
 	user = &model.User{
 		UID: au.UID,
 		Profile: model.SocialProfile{
-			ScreenName:    au.Google.ID,
-			DisplayName:   "名無しさん",
-			StatusMessage: "",
+			ScreenName:  random.String(20),
+			DisplayName: "名無しさん",
 		},
 		Google: au.Google,
 	}

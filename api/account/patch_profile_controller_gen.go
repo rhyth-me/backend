@@ -101,6 +101,10 @@ func (p *PatchProfileController) PatchProfile(
 				return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 			}
 
+			if user.Profile.ImageHash != "" {
+				_ = storage.DeleteImage(user.Profile.ImageHash)
+			}
+
 			user.Profile.ImageHash = value
 		}
 	}
