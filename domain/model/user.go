@@ -21,6 +21,7 @@ type SocialProfile struct {
 	ScreenName    string `firestore:"screenName" json:"screenName" validate:"omitempty,min=3,max=25"`
 	DisplayName   string `firestore:"displayName" json:"displayName" validate:"omitempty,min=1,max=20"`
 	StatusMessage string `firestore:"statusMessage" json:"statusMessage" validate:"omitempty,min=0,max=150"`
+	ImageHash     string `firestore:"imageHash" json:"imageHash" validate:"omitempty,len=64"`
 }
 
 // PayoutSettings - information for withdrawal.

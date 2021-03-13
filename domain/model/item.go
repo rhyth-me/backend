@@ -16,12 +16,23 @@ type ItemAuthor struct {
 
 // ItemSnippet - item datails
 type ItemSnippet struct {
-	ThumbnailImagePath string   `firestore:"thumbnailImagePath" json:"thumbnailImagePath,omitempty"`
-	Title              string   `firestore:"title" json:"title,omitempty" validate:"required,max=40"`
-	MusicTitle         string   `firestore:"musicTitle" json:"musicTitle,omitempty" validate:"required,max=40"`
-	Summary            string   `firestore:"summary" json:"summary,omitempty" validate:"max=200"`
-	Price              int      `firestore:"price" json:"price,omitempty" validate:"min=0,max=10000000"`
-	Tags               []string `firestore:"tags" json:"tags,omitempty" validate:"unique"`
+	Thumbnails Thumbnails `firestore:"thumbnails" json:"thumbnails,omitempty"`
+	Title      string     `firestore:"title" json:"title,omitempty" validate:"required,max=40"`
+	MusicTitle string     `firestore:"musicTitle" json:"musicTitle,omitempty" validate:"required,max=40"`
+	Summary    string     `firestore:"summary" json:"summary,omitempty" validate:"max=200"`
+	Price      int        `firestore:"price" json:"price,omitempty" validate:"min=0,max=10000000"`
+	Tags       []string   `firestore:"tags" json:"tags,omitempty" validate:"unique"`
+}
+
+// Thumbnails - item thumbnails
+type Thumbnails struct {
+	YouTube string  `firestore:"youtube" json:"youtube"`
+	Images  []Image `firestore:"images" json:"images"`
+}
+
+// Image - thumbnail image
+type Image struct {
+	Path string `firestore:"path" json:"path"`
 }
 
 // ItemStatistics - item statistics

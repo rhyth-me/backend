@@ -9,6 +9,7 @@ import (
 	"github.com/rhyth-me/backend/api/apigen"
 	"github.com/rhyth-me/backend/pkg/firebase/auth"
 	"github.com/rhyth-me/backend/pkg/firebase/firestore"
+	"github.com/rhyth-me/backend/pkg/firebase/storage"
 	"github.com/rhyth-me/backend/pkg/stripe"
 )
 
@@ -18,6 +19,7 @@ func main() {
 	// Init firebase
 	auth.Init()
 	firestore.Init()
+	storage.Init()
 
 	// Init stripe
 	stripe.Init()

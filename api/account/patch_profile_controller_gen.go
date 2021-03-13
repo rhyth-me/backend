@@ -3,6 +3,7 @@
 package account
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -12,6 +13,7 @@ import (
 	"github.com/rhyth-me/backend/api/apigen/wrapper"
 	"github.com/rhyth-me/backend/pkg/firebase/auth"
 	"github.com/rhyth-me/backend/pkg/firebase/firestore"
+	"github.com/rhyth-me/backend/pkg/firebase/storage"
 )
 
 // PatchProfileController ...
@@ -80,12 +82,26 @@ func (p *PatchProfileController) PatchProfile(
 				return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 			}
 
+			ctx := context.Background()
 			user.Profile.ScreenName = value
+			claims := map[string]interface{}{"screen_name": user.Profile.ScreenName}
+
+			err = auth.Client.SetCustomUserClaims(ctx, user.UID, claims)
+			if err != nil {
+				return nil, wrapper.NewAPIError(http.StatusInternalServerError)
+			}
 
 		case "DisplayName":
 			user.Profile.DisplayName = value
 		case "StatusMessage":
 			user.Profile.StatusMessage = value
+		case "ImageHash":
+			err := storage.ActivateImage(value)
+			if err != nil {
+				return nil, wrapper.NewAPIError(http.StatusInternalServerError)
+			}
+
+			user.Profile.ImageHash = value
 		}
 	}
 
