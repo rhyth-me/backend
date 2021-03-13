@@ -102,7 +102,7 @@ func (p *PatchProfileController) PatchProfile(
 			}
 
 			if user.Profile.ImageHash != "" {
-				_ = storage.DeleteImage(value)
+				_ = storage.DeleteImage(user.Profile.ImageHash)
 			}
 
 			user.Profile.ImageHash = value
