@@ -42,3 +42,21 @@ func ActivateImage(imageHash string) error {
 
 	return nil
 }
+
+// DeleteImage - Delete an item from image bucket.
+func DeleteImage(imageHash string) error {
+	ctx := context.Background()
+
+	image, err := Client.Bucket(Image)
+	if err != nil {
+		return errors.New("Failed to setup image bucket handler")
+	}
+
+	bucket := image.Object(imageHash)
+
+	if err := bucket.Delete(ctx); err != nil {
+		return errors.New("Failed to delete")
+	}
+
+	return nil
+}
