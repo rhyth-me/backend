@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	"firebase.google.com/go/auth"
+	"firebase.google.com/go/v4/auth"
 	"github.com/golang/glog"
 	"github.com/rhyth-me/backend/pkg/firebase"
 )
