@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"errors"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rhyth-me/backend/domain/model"
@@ -15,7 +16,10 @@ func Identify(c echo.Context) *CustomContext {
 
 	token, err := Client.VerifyIDToken(ctx, jwt)
 	if err != nil {
-		return &CustomContext{Context: c}
+		return &CustomContext{Context: c, Access: model.Access{
+			IPAddress: c.Request().RemoteAddr,
+			UserAgent: c.Request().Header.Get("User-Agent"),
+		}}
 	}
 
 	claims := token.Claims
@@ -26,14 +30,24 @@ func Identify(c echo.Context) *CustomContext {
 		screenName = val
 	}
 
-	cc := &CustomContext{Context: c, User: LoginUser{
-		UID:        token.UID,
-		ScreenName: screenName,
-		Google: model.Google{
-			ID:    identities["google.com"].([]interface{})[0].(string),
-			Email: identities["email"].([]interface{})[0].(string),
+	cc := &CustomContext{
+		Context: c,
+		User: LoginUser{
+			UID:        token.UID,
+			ScreenName: screenName,
+			Google: model.Google{
+				ID:    identities["google.com"].([]interface{})[0].(string),
+				Email: identities["email"].([]interface{})[0].(string),
+			},
 		},
-	}}
+		Access: model.Access{
+			IPAddress: c.Request().RemoteAddr,
+			UserAgent: c.Request().Header.Get("User-Agent"),
+		}}
+
+	if os.Getenv("STAGING") == "true" {
+		cc.Access.IPAddress = "8.8.8.8"
+	}
 
 	return cc
 }
@@ -53,4 +67,11 @@ func GetAuthedUser(c echo.Context) LoginUser {
 	au := c.(*CustomContext).User
 
 	return au
+}
+
+// GetAccessEnv - Return the user's ip etc.
+func GetAccessEnv(c echo.Context) model.Access {
+	env := c.(*CustomContext).Access
+
+	return env
 }
