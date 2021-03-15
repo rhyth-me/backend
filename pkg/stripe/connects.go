@@ -22,6 +22,7 @@ func CreateAccount(user *model.User, access model.Access) (*stripe.Account, erro
 				"IPAddress":   access.IPAddress,
 			},
 		},
+		BusinessType: stripe.String("individual"),
 		Capabilities: &stripe.AccountCapabilitiesParams{
 			Transfers: &stripe.AccountCapabilitiesTransfersParams{
 				Requested: stripe.Bool(true),
@@ -56,4 +57,21 @@ func DeleteAccount(accountID string) error {
 		return errors.New("Failed to delete an account")
 	}
 	return nil
+}
+
+// IssueLoginLink - Create a login link to log in user's connect account.
+func IssueLoginLink(accountID string) (*stripe.AccountLink, error) {
+	params := &stripe.AccountLinkParams{
+		Account:    stripe.String(accountID),
+		RefreshURL: stripe.String("https://rhyth.me/"),
+		ReturnURL:  stripe.String("https://rhyth.me/"),
+		Type:       stripe.String("account_onboarding"),
+	}
+
+	al, err := Client.AccountLinks.New(params)
+	if err != nil {
+		return nil, errors.New("Failed to create an account")
+	}
+
+	return al, nil
 }
