@@ -31,9 +31,11 @@ func NewRoutes(p *props.ControllerProps, router *echo.Group, opts ...io.Writer) 
 	}
 	router.DELETE("cards", r.DeleteCards(p))
 	router.GET("cards", r.GetCards(p))
+	router.GET("connect", r.GetConnect(p))
 	router.GET("profile", r.GetProfile(p))
 	router.PATCH("profile", r.PatchProfile(p))
 	router.PUT("cards", r.PutCards(p))
+	router.PUT("connect", r.PutConnect(p))
 	return r
 }
 
@@ -112,6 +114,51 @@ func (r *Routes) GetCards(p *props.ControllerProps) echo.HandlerFunc {
 			}
 		}
 		res, err := i.GetCards(c, req)
+		if err != nil {
+			if xerrors.As(err, &werr) {
+				log.Printf("%+v", werr)
+				return c.JSON(werr.Status, werr.Body)
+			}
+			return err
+		}
+		if res == nil {
+			return nil
+		}
+
+		return c.JSON(http.StatusOK, res)
+	}
+}
+
+// GetConnect ...
+func (r *Routes) GetConnect(p *props.ControllerProps) echo.HandlerFunc {
+	i := NewGetConnectController(p)
+
+	b, ok := (interface{})(i).(interface{ AutoBind() bool })
+	bindable := !ok || b.AutoBind()
+
+	return func(c echo.Context) error {
+		var (
+			req  *GetConnectRequest
+			werr *wrapper.APIError
+		)
+
+		if bindable {
+			req = new(GetConnectRequest)
+			if err := c.Bind(req); err != nil {
+				log.Printf("failed to JSON binding(/account/connect): %+v", err)
+				return c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"code":    http.StatusBadRequest,
+					"message": "invalid request.",
+				})
+			}
+			if err := c.Validate(req); err != nil && err != echo.ErrValidatorNotRegistered {
+				if xerrors.As(err, &werr) {
+					return c.JSON(werr.Status, werr.Body)
+				}
+				return err
+			}
+		}
+		res, err := i.GetConnect(c, req)
 		if err != nil {
 			if xerrors.As(err, &werr) {
 				log.Printf("%+v", werr)
@@ -262,6 +309,51 @@ func (r *Routes) PutCards(p *props.ControllerProps) echo.HandlerFunc {
 	}
 }
 
+// PutConnect ...
+func (r *Routes) PutConnect(p *props.ControllerProps) echo.HandlerFunc {
+	i := NewPutConnectController(p)
+
+	b, ok := (interface{})(i).(interface{ AutoBind() bool })
+	bindable := !ok || b.AutoBind()
+
+	return func(c echo.Context) error {
+		var (
+			req  *PutConnectRequest
+			werr *wrapper.APIError
+		)
+
+		if bindable {
+			req = new(PutConnectRequest)
+			if err := c.Bind(req); err != nil {
+				log.Printf("failed to JSON binding(/account/connect): %+v", err)
+				return c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"code":    http.StatusBadRequest,
+					"message": "invalid request.",
+				})
+			}
+			if err := c.Validate(req); err != nil && err != echo.ErrValidatorNotRegistered {
+				if xerrors.As(err, &werr) {
+					return c.JSON(werr.Status, werr.Body)
+				}
+				return err
+			}
+		}
+		res, err := i.PutConnect(c, req)
+		if err != nil {
+			if xerrors.As(err, &werr) {
+				log.Printf("%+v", werr)
+				return c.JSON(werr.Status, werr.Body)
+			}
+			return err
+		}
+		if res == nil {
+			return nil
+		}
+
+		return c.JSON(http.StatusOK, res)
+	}
+}
+
 // IDeleteCardsController ...
 type IDeleteCardsController interface {
 	DeleteCards(c echo.Context, req *DeleteCardsRequest) (res *DeleteCardsResponse, err error)
@@ -270,6 +362,11 @@ type IDeleteCardsController interface {
 // IGetCardsController ...
 type IGetCardsController interface {
 	GetCards(c echo.Context, req *GetCardsRequest) (res *GetCardsResponse, err error)
+}
+
+// IGetConnectController ...
+type IGetConnectController interface {
+	GetConnect(c echo.Context, req *GetConnectRequest) (res *GetConnectResponse, err error)
 }
 
 // IGetProfileController ...
@@ -285,4 +382,9 @@ type IPatchProfileController interface {
 // IPutCardsController ...
 type IPutCardsController interface {
 	PutCards(c echo.Context, req *PutCardsRequest) (res *PutCardsResponse, err error)
+}
+
+// IPutConnectController ...
+type IPutConnectController interface {
+	PutConnect(c echo.Context, req *PutConnectRequest) (res *PutConnectResponse, err error)
 }
