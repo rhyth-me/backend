@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"errors"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rhyth-me/backend/domain/model"
@@ -43,6 +44,10 @@ func Identify(c echo.Context) *CustomContext {
 			IPAddress: c.Request().RemoteAddr,
 			UserAgent: c.Request().Header.Get("User-Agent"),
 		}}
+
+	if os.Getenv("STAGING") == "true" {
+		cc.Access.IPAddress = "8.8.8.8"
+	}
 
 	return cc
 }
