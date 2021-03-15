@@ -8,7 +8,8 @@ import (
 // CustomContext - echoContext expansion
 type CustomContext struct {
 	echo.Context
-	User LoginUser
+	User   LoginUser
+	Access model.Access
 }
 
 // LoginUser - The identifier of the authenticated user.

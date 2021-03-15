@@ -16,6 +16,12 @@ type Google struct {
 	Email string `firestore:"email"  json:"-"`
 }
 
+// Access - user browser env
+type Access struct {
+	IPAddress string `firestore:"ipAddress" json:"ipAddress"`
+	UserAgent string `firestore:"userAgent" json:"userAgent"`
+}
+
 // SocialProfile - details of the user as displayed on the site.
 type SocialProfile struct {
 	ScreenName    string `firestore:"screenName" json:"screenName" validate:"omitempty,min=3,max=25"`
