@@ -3,16 +3,13 @@
 package account
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rhyth-me/backend/api/apigen/props"
 	"github.com/rhyth-me/backend/api/apigen/wrapper"
-	"github.com/rhyth-me/backend/domain/model"
 	"github.com/rhyth-me/backend/pkg/firebase/auth"
 	"github.com/rhyth-me/backend/pkg/firebase/firestore"
-	"github.com/rhyth-me/backend/pkg/random"
 )
 
 // GetProfileController ...
@@ -50,35 +47,7 @@ func (g *GetProfileController) GetProfile(
 
 	au := auth.GetAuthedUser(c)
 
-	user, _ := firestore.GetUserByGoogleID(au.Google.ID)
-	if user != nil {
-		res = &GetProfileResponse{
-			Code:    http.StatusOK,
-			Message: "Success",
-			Result:  user.Profile,
-		}
-		return res, nil
-	}
-
-	ctx := context.Background()
-
-	user = &model.User{
-		UID: au.UID,
-		Profile: model.SocialProfile{
-			ScreenName:  random.String(20),
-			DisplayName: "名無しさん",
-		},
-		Google: au.Google,
-	}
-
-	_, err = firestore.Client.Collection(firestore.Users).Doc(au.Google.ID).Set(ctx, user)
-	if err != nil {
-		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
-	}
-
-	// Add custom claims
-	claims := map[string]interface{}{"screen_name": user.Profile.ScreenName}
-	err = auth.Client.SetCustomUserClaims(ctx, user.UID, claims)
+	user, err := firestore.GetUserByGoogleID(au.Google.ID)
 	if err != nil {
 		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 	}
@@ -88,8 +57,8 @@ func (g *GetProfileController) GetProfile(
 		Message: "Success",
 		Result:  user.Profile,
 	}
-
 	return res, nil
+
 }
 
 // AutoBind - use echo.Bind
