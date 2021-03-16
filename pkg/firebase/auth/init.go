@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"os"
 
 	"firebase.google.com/go/v4/auth"
 	"github.com/golang/glog"
@@ -9,7 +10,10 @@ import (
 )
 
 // Client - firebase authentication client
-var Client *auth.Client
+var (
+	Client      *auth.Client
+	SessionName string
+)
 
 // Init - setup firebase authentication client
 func Init() *auth.Client {
@@ -22,6 +26,7 @@ func Init() *auth.Client {
 	}
 
 	Client = cli
+	SessionName = os.Getenv("SESSION_NAME")
 
 	return cli
 }

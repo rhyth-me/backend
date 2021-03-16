@@ -6,6 +6,7 @@ import (
 	"os"
 	r "reflect"
 
+	fa "firebase.google.com/go/v4/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/mitchellh/mapstructure"
 	"github.com/rhyth-me/backend/domain/model"
@@ -33,7 +34,7 @@ func Identify(c echo.Context) *CustomContext {
 	}
 
 	// Get session cookie
-	cookie, err := c.Cookie("_rhythme_session")
+	cookie, err := c.Cookie(SessionName)
 	if err != nil {
 		return &CustomContext{Context: c, Access: access}
 	}
@@ -44,8 +45,7 @@ func Identify(c echo.Context) *CustomContext {
 		return &CustomContext{Context: c, Access: access}
 	}
 
-	var claims Claims
-	err = mapstructure.Decode(token.Claims, &claims)
+	claims, err := ParseClaims(token)
 	if err != nil {
 		return &CustomContext{Context: c, Access: access}
 	}
@@ -67,6 +67,16 @@ func Identify(c echo.Context) *CustomContext {
 	}
 
 	return cc
+}
+
+// ParseClaims - read claims from map
+func ParseClaims(token *fa.Token) (*Claims, error) {
+	var claims *Claims
+	err := mapstructure.Decode(token.Claims, &claims)
+	if err != nil {
+		return nil, errors.New("Failed to parse claims")
+	}
+	return claims, nil
 }
 
 // IsAuthedUser - Verify if the user is logged in.
