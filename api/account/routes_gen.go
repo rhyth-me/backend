@@ -32,6 +32,8 @@ func NewRoutes(p *props.ControllerProps, router *echo.Group, opts ...io.Writer) 
 	router.DELETE("cards", r.DeleteCards(p))
 	router.GET("cards", r.GetCards(p))
 	router.GET("connect", r.GetConnect(p))
+	router.GET("login", r.GetLogin(p))
+	router.GET("logout", r.GetLogout(p))
 	router.GET("profile", r.GetProfile(p))
 	router.PATCH("profile", r.PatchProfile(p))
 	router.PUT("cards", r.PutCards(p))
@@ -159,6 +161,96 @@ func (r *Routes) GetConnect(p *props.ControllerProps) echo.HandlerFunc {
 			}
 		}
 		res, err := i.GetConnect(c, req)
+		if err != nil {
+			if xerrors.As(err, &werr) {
+				log.Printf("%+v", werr)
+				return c.JSON(werr.Status, werr.Body)
+			}
+			return err
+		}
+		if res == nil {
+			return nil
+		}
+
+		return c.JSON(http.StatusOK, res)
+	}
+}
+
+// GetLogin ...
+func (r *Routes) GetLogin(p *props.ControllerProps) echo.HandlerFunc {
+	i := NewGetLoginController(p)
+
+	b, ok := (interface{})(i).(interface{ AutoBind() bool })
+	bindable := !ok || b.AutoBind()
+
+	return func(c echo.Context) error {
+		var (
+			req  *GetLoginRequest
+			werr *wrapper.APIError
+		)
+
+		if bindable {
+			req = new(GetLoginRequest)
+			if err := c.Bind(req); err != nil {
+				log.Printf("failed to JSON binding(/account/login): %+v", err)
+				return c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"code":    http.StatusBadRequest,
+					"message": "invalid request.",
+				})
+			}
+			if err := c.Validate(req); err != nil && err != echo.ErrValidatorNotRegistered {
+				if xerrors.As(err, &werr) {
+					return c.JSON(werr.Status, werr.Body)
+				}
+				return err
+			}
+		}
+		res, err := i.GetLogin(c, req)
+		if err != nil {
+			if xerrors.As(err, &werr) {
+				log.Printf("%+v", werr)
+				return c.JSON(werr.Status, werr.Body)
+			}
+			return err
+		}
+		if res == nil {
+			return nil
+		}
+
+		return c.JSON(http.StatusOK, res)
+	}
+}
+
+// GetLogout ...
+func (r *Routes) GetLogout(p *props.ControllerProps) echo.HandlerFunc {
+	i := NewGetLogoutController(p)
+
+	b, ok := (interface{})(i).(interface{ AutoBind() bool })
+	bindable := !ok || b.AutoBind()
+
+	return func(c echo.Context) error {
+		var (
+			req  *GetLogoutRequest
+			werr *wrapper.APIError
+		)
+
+		if bindable {
+			req = new(GetLogoutRequest)
+			if err := c.Bind(req); err != nil {
+				log.Printf("failed to JSON binding(/account/logout): %+v", err)
+				return c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"code":    http.StatusBadRequest,
+					"message": "invalid request.",
+				})
+			}
+			if err := c.Validate(req); err != nil && err != echo.ErrValidatorNotRegistered {
+				if xerrors.As(err, &werr) {
+					return c.JSON(werr.Status, werr.Body)
+				}
+				return err
+			}
+		}
+		res, err := i.GetLogout(c, req)
 		if err != nil {
 			if xerrors.As(err, &werr) {
 				log.Printf("%+v", werr)
@@ -367,6 +459,16 @@ type IGetCardsController interface {
 // IGetConnectController ...
 type IGetConnectController interface {
 	GetConnect(c echo.Context, req *GetConnectRequest) (res *GetConnectResponse, err error)
+}
+
+// IGetLoginController ...
+type IGetLoginController interface {
+	GetLogin(c echo.Context, req *GetLoginRequest) (res *GetLoginResponse, err error)
+}
+
+// IGetLogoutController ...
+type IGetLogoutController interface {
+	GetLogout(c echo.Context, req *GetLogoutRequest) (res *GetLogoutResponse, err error)
 }
 
 // IGetProfileController ...
