@@ -18,3 +18,18 @@ type LoginUser struct {
 	ScreenName string
 	Google     model.Google
 }
+
+// Claims - firebase auth claims
+type Claims struct {
+	Firebase   Firebase `mapstructure:"firebase"`
+	ScreenName string   `mapstructure:"screen_name"`
+}
+
+type Firebase struct {
+	Identities Identities `mapstructure:"identities"`
+}
+
+type Identities struct {
+	Email    []string `mapstructure:"email"`
+	GoogleID []string `mapstructure:"google.com"`
+}
