@@ -56,7 +56,7 @@ func (g *GetLoginController) GetLogin(
 	}
 
 	// Return error if the sign-in is older than 30 seconds.
-	if time.Now().Unix()-t.AuthTime > 3000 {
+	if time.Now().Unix()-t.AuthTime > 30 {
 		body := map[string]string{
 			"message": "expired token",
 		}
