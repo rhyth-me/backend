@@ -14,6 +14,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/labstack/echo/v4 v4.2.1
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/stripe/stripe-go/v72 v72.37.0
 	golang.org/x/mod v0.4.2 // indirect
 	golang.org/x/oauth2 v0.0.0-20210311163135-5366d9dc1934 // indirect
