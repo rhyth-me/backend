@@ -32,10 +32,10 @@ func NewRoutes(p *props.ControllerProps, router *echo.Group, opts ...io.Writer) 
 	router.DELETE("cards", r.DeleteCards(p))
 	router.GET("cards", r.GetCards(p))
 	router.GET("connect", r.GetConnect(p))
-	router.GET("login", r.GetLogin(p))
 	router.GET("logout", r.GetLogout(p))
 	router.GET("profile", r.GetProfile(p))
 	router.PATCH("profile", r.PatchProfile(p))
+	router.POST("login", r.PostLogin(p))
 	router.PUT("cards", r.PutCards(p))
 	router.PUT("connect", r.PutConnect(p))
 	return r
@@ -161,51 +161,6 @@ func (r *Routes) GetConnect(p *props.ControllerProps) echo.HandlerFunc {
 			}
 		}
 		res, err := i.GetConnect(c, req)
-		if err != nil {
-			if xerrors.As(err, &werr) {
-				log.Printf("%+v", werr)
-				return c.JSON(werr.Status, werr.Body)
-			}
-			return err
-		}
-		if res == nil {
-			return nil
-		}
-
-		return c.JSON(http.StatusOK, res)
-	}
-}
-
-// GetLogin ...
-func (r *Routes) GetLogin(p *props.ControllerProps) echo.HandlerFunc {
-	i := NewGetLoginController(p)
-
-	b, ok := (interface{})(i).(interface{ AutoBind() bool })
-	bindable := !ok || b.AutoBind()
-
-	return func(c echo.Context) error {
-		var (
-			req  *GetLoginRequest
-			werr *wrapper.APIError
-		)
-
-		if bindable {
-			req = new(GetLoginRequest)
-			if err := c.Bind(req); err != nil {
-				log.Printf("failed to JSON binding(/account/login): %+v", err)
-				return c.JSON(http.StatusBadRequest, map[string]interface{}{
-					"code":    http.StatusBadRequest,
-					"message": "invalid request.",
-				})
-			}
-			if err := c.Validate(req); err != nil && err != echo.ErrValidatorNotRegistered {
-				if xerrors.As(err, &werr) {
-					return c.JSON(werr.Status, werr.Body)
-				}
-				return err
-			}
-		}
-		res, err := i.GetLogin(c, req)
 		if err != nil {
 			if xerrors.As(err, &werr) {
 				log.Printf("%+v", werr)
@@ -356,6 +311,51 @@ func (r *Routes) PatchProfile(p *props.ControllerProps) echo.HandlerFunc {
 	}
 }
 
+// PostLogin ...
+func (r *Routes) PostLogin(p *props.ControllerProps) echo.HandlerFunc {
+	i := NewPostLoginController(p)
+
+	b, ok := (interface{})(i).(interface{ AutoBind() bool })
+	bindable := !ok || b.AutoBind()
+
+	return func(c echo.Context) error {
+		var (
+			req  *PostLoginRequest
+			werr *wrapper.APIError
+		)
+
+		if bindable {
+			req = new(PostLoginRequest)
+			if err := c.Bind(req); err != nil {
+				log.Printf("failed to JSON binding(/account/login): %+v", err)
+				return c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"code":    http.StatusBadRequest,
+					"message": "invalid request.",
+				})
+			}
+			if err := c.Validate(req); err != nil && err != echo.ErrValidatorNotRegistered {
+				if xerrors.As(err, &werr) {
+					return c.JSON(werr.Status, werr.Body)
+				}
+				return err
+			}
+		}
+		res, err := i.PostLogin(c, req)
+		if err != nil {
+			if xerrors.As(err, &werr) {
+				log.Printf("%+v", werr)
+				return c.JSON(werr.Status, werr.Body)
+			}
+			return err
+		}
+		if res == nil {
+			return nil
+		}
+
+		return c.JSON(http.StatusOK, res)
+	}
+}
+
 // PutCards ...
 func (r *Routes) PutCards(p *props.ControllerProps) echo.HandlerFunc {
 	i := NewPutCardsController(p)
@@ -461,11 +461,6 @@ type IGetConnectController interface {
 	GetConnect(c echo.Context, req *GetConnectRequest) (res *GetConnectResponse, err error)
 }
 
-// IGetLoginController ...
-type IGetLoginController interface {
-	GetLogin(c echo.Context, req *GetLoginRequest) (res *GetLoginResponse, err error)
-}
-
 // IGetLogoutController ...
 type IGetLogoutController interface {
 	GetLogout(c echo.Context, req *GetLogoutRequest) (res *GetLogoutResponse, err error)
@@ -479,6 +474,11 @@ type IGetProfileController interface {
 // IPatchProfileController ...
 type IPatchProfileController interface {
 	PatchProfile(c echo.Context, req *PatchProfileRequest) (res *PatchProfileResponse, err error)
+}
+
+// IPostLoginController ...
+type IPostLoginController interface {
+	PostLogin(c echo.Context, req *PostLoginRequest) (res *PostLoginResponse, err error)
 }
 
 // IPutCardsController ...
