@@ -16,32 +16,32 @@ import (
 	"github.com/rhyth-me/backend/pkg/random"
 )
 
-// GetLoginController ...
-type GetLoginController struct {
+// PostLoginController ...
+type PostLoginController struct {
 	*props.ControllerProps
 }
 
-// NewGetLoginController ...
-func NewGetLoginController(cp *props.ControllerProps) *GetLoginController {
-	g := &GetLoginController{
+// NewPostLoginController ...
+func NewPostLoginController(cp *props.ControllerProps) *PostLoginController {
+	p := &PostLoginController{
 		ControllerProps: cp,
 	}
-	return g
+	return p
 }
 
-// GetLogin ...
+// PostLogin ...
 // @Summary WIP
 // @Description WIP
 // @Accept json
 // @Produce json
-// @Param idToken query string false ""
-// @Success 200 {object} GetLoginResponse
+// @Param idToken body string false ""
+// @Success 200 {object} PostLoginResponse
 // @Failure 400 {object} wrapper.APIError
 // @Failure 500 {object} wrapper.APIError
-// @Router /account/login [GET]
-func (g *GetLoginController) GetLogin(
-	c echo.Context, req *GetLoginRequest,
-) (res *GetLoginResponse, err error) {
+// @Router /account/login [POST]
+func (p *PostLoginController) PostLogin(
+	c echo.Context, req *PostLoginRequest,
+) (res *PostLoginResponse, err error) {
 	if req.IDtoken == "" {
 		return nil, wrapper.NewAPIError(http.StatusBadRequest)
 	}
@@ -120,7 +120,7 @@ func (g *GetLoginController) GetLogin(
 	}
 	c.SetCookie(cookie)
 
-	res = &GetLoginResponse{
+	res = &PostLoginResponse{
 		Code:    http.StatusOK,
 		Message: "Success",
 		Result: map[string]interface{}{
@@ -132,6 +132,6 @@ func (g *GetLoginController) GetLogin(
 }
 
 // AutoBind - use echo.Bind
-func (g *GetLoginController) AutoBind() bool {
+func (p *PostLoginController) AutoBind() bool {
 	return true
 }
