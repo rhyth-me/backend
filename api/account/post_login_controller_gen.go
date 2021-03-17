@@ -114,6 +114,7 @@ func (p *PostLoginController) PostLogin(
 		Name:     auth.SessionName,
 		Value:    session,
 		Domain:   "rhyth.me",
+		Path:     "/",
 		MaxAge:   int(expiresIn.Seconds()),
 		Secure:   true,
 		HttpOnly: true,
