@@ -36,13 +36,14 @@ func initEchoSetting(e *echo.Echo) *echo.Echo {
 	// CORS config
 	origins := []string{"https://rhyth.me"}
 	if os.Getenv("STAGING") == "true" {
-		origins = []string{"*"}
+		origins = []string{"https://staging.rhyth.me", "http://dev.rhyth.me:3000", "http://dev.rhyth.me:8080", "http://localhost:3000", "http://localhost:8080"}
 	}
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: origins,
-		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodPatch},
-		MaxAge:       3600,
+		AllowOrigins:     origins,
+		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodPatch},
+		AllowCredentials: true,
+		MaxAge:           3600,
 	}))
 
 	return e
