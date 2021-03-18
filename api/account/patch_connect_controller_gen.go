@@ -1,6 +1,6 @@
-// Package connect ...
+// Package account ...
 // generated version: devel
-package connect
+package account
 
 import (
 	"net/http"
@@ -13,31 +13,31 @@ import (
 	"github.com/rhyth-me/backend/pkg/stripe"
 )
 
-// GetLoginController ...
-type GetLoginController struct {
+// PatchConnectController ...
+type PatchConnectController struct {
 	*props.ControllerProps
 }
 
-// NewGetLoginController ...
-func NewGetLoginController(cp *props.ControllerProps) *GetLoginController {
-	g := &GetLoginController{
+// NewPatchConnectController ...
+func NewPatchConnectController(cp *props.ControllerProps) *PatchConnectController {
+	p := &PatchConnectController{
 		ControllerProps: cp,
 	}
-	return g
+	return p
 }
 
-// GetLogin ...
+// PatchConnect ...
 // @Summary WIP
 // @Description WIP
 // @Accept json
 // @Produce json
-// @Success 200 {object} GetLoginResponse
+// @Success 200 {object} PatchConnectResponse
 // @Failure 400 {object} wrapper.APIError
 // @Failure 500 {object} wrapper.APIError
-// @Router /account/connect/login [GET]
-func (g *GetLoginController) GetLogin(
-	c echo.Context, req *GetLoginRequest,
-) (res *GetLoginResponse, err error) {
+// @Router /account/connect [PATCH]
+func (p *PatchConnectController) PatchConnect(
+	c echo.Context, req *PatchConnectRequest,
+) (res *PatchConnectResponse, err error) {
 	if err := auth.IsAuthedUser(c); err != nil {
 		body := map[string]string{
 			"message": err.Error(),
@@ -56,24 +56,46 @@ func (g *GetLoginController) GetLogin(
 		body := map[string]string{
 			"message": "You don't have a connect account.",
 		}
-		return nil, wrapper.NewAPIError(http.StatusNotFound, body)
+		return nil, wrapper.NewAPIError(http.StatusConflict, body)
 	}
 
-	al, err := stripe.IssueLoginLink(user.Payment.Connect.ID)
+	if user.Payment.Connect.Status == -1 {
+		return nil, wrapper.NewAPIError(http.StatusForbidden)
+	}
+
+	// Get a connect account
+	a, err := stripe.GetAccount(user.Payment.Connect.ID)
 	if err != nil {
 		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 	}
 
-	res = &GetLoginResponse{
+	var status int = user.Payment.Connect.Status
+	if a.ChargesEnabled {
+		status = 1
+	}
+	if a.PayoutsEnabled {
+		status = 2
+	}
+
+	if user.Payment.Connect.Status != status {
+		user.Payment.Connect.Status = status
+
+		_, err = firestore.StoreUser(user)
+		if err != nil {
+			return nil, wrapper.NewAPIError(http.StatusInternalServerError)
+		}
+	}
+
+	res = &PatchConnectResponse{
 		Code:    http.StatusOK,
 		Message: "Success",
-		Result:  al.URL,
+		Result:  user.Payment.Connect.Status,
 	}
 
 	return res, nil
 }
 
 // AutoBind - use echo.Bind
-func (g *GetLoginController) AutoBind() bool {
+func (p *PatchConnectController) AutoBind() bool {
 	return true
 }

@@ -5,16 +5,31 @@ type GetConnectRequest struct{}
 
 // GetConnectResponse - Return the information.
 type GetConnectResponse struct {
-	Code    int    `json:"code"`
-	Message string `json:"message,omitempty"`
-	Result  string `json:"result,omitempty"`
+	Code    int                      `json:"code"`
+	Message string                   `json:"message,omitempty"`
+	Result  GetConnectResponseResult `json:"result,omitempty"`
 }
 
-// PutConnectRequest - Submit the consent information to stripe & create a new connect account.
-type PutConnectRequest struct{}
+type GetConnectResponseResult struct {
+	Exist  bool `json:"exist"`
+	Status int  `json:"status"` // 0:need info, 1:active, -1:banned
+}
 
-// PutConnectResponse - Return the result.
-type PutConnectResponse struct {
+// PostConnectRequest - Submit the consent information to stripe & create a new connect account.
+type PostConnectRequest struct{}
+
+// PostConnectResponse - Return the result.
+type PostConnectResponse struct {
 	Code    int    `json:"code"`
 	Message string `json:"message,omitempty"`
+}
+
+// PatchConnectRequest - Update status.
+type PatchConnectRequest struct{}
+
+// PatchConnectResponse - Return status.
+type PatchConnectResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message,omitempty"`
+	Result  int    `json:"result,omitempty"`
 }

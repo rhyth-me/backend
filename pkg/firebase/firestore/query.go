@@ -13,6 +13,7 @@ func GetUserByScreenName(sn string) (*model.User, error) {
 
 	iter := Client.Collection(Users).
 		Where("profile.screenName", "==", sn).
+		Limit(1).
 		Documents(ctx)
 
 	docs, err := iter.GetAll()
@@ -38,6 +39,7 @@ func GetUserByGoogleID(googleID string) (*model.User, error) {
 
 	iter := Client.Collection(Users).
 		Where("google.id", "==", googleID).
+		Limit(1).
 		Documents(ctx)
 
 	docs, err := iter.GetAll()

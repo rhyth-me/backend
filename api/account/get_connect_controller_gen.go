@@ -51,17 +51,20 @@ func (g *GetConnectController) GetConnect(
 		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 	}
 
-	if user.Payment.ConnectID == "" {
-		body := map[string]string{
-			"message": "You don't have a connect account.",
-		}
-		return nil, wrapper.NewAPIError(http.StatusNotFound, body)
+	var exist bool = false
+	var status int = 0
+	if user.Payment.Connect.ID != "" {
+		exist = true
+		status = user.Payment.Connect.Status
 	}
 
 	res = &GetConnectResponse{
 		Code:    http.StatusOK,
 		Message: "Success",
-		Result:  "200",
+		Result: GetConnectResponseResult{
+			Exist:  exist,
+			Status: status,
+		},
 	}
 
 	return res, nil

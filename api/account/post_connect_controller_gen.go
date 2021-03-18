@@ -13,31 +13,31 @@ import (
 	"github.com/rhyth-me/backend/pkg/stripe"
 )
 
-// PutConnectController ...
-type PutConnectController struct {
+// PostConnectController ...
+type PostConnectController struct {
 	*props.ControllerProps
 }
 
-// NewPutConnectController ...
-func NewPutConnectController(cp *props.ControllerProps) *PutConnectController {
-	p := &PutConnectController{
+// NewPostConnectController ...
+func NewPostConnectController(cp *props.ControllerProps) *PostConnectController {
+	p := &PostConnectController{
 		ControllerProps: cp,
 	}
 	return p
 }
 
-// PutConnect ...
+// PostConnect ...
 // @Summary WIP
 // @Description WIP
 // @Accept json
 // @Produce json
-// @Success 200 {object} PutConnectResponse
+// @Success 200 {object} PostConnectResponse
 // @Failure 400 {object} wrapper.APIError
 // @Failure 500 {object} wrapper.APIError
-// @Router /account/connect [PUT]
-func (p *PutConnectController) PutConnect(
-	c echo.Context, req *PutConnectRequest,
-) (res *PutConnectResponse, err error) {
+// @Router /account/connect [POST]
+func (p *PostConnectController) PostConnect(
+	c echo.Context, req *PostConnectRequest,
+) (res *PostConnectResponse, err error) {
 	if err := auth.IsAuthedUser(c); err != nil {
 		body := map[string]string{
 			"message": err.Error(),
@@ -53,7 +53,7 @@ func (p *PutConnectController) PutConnect(
 		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 	}
 
-	if user.Payment.ConnectID != "" {
+	if user.Payment.Connect.ID != "" {
 		body := map[string]string{
 			"message": "You already have a connect account.",
 		}
@@ -66,14 +66,14 @@ func (p *PutConnectController) PutConnect(
 		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 	}
 
-	user.Payment.ConnectID = result.ID
+	user.Payment.Connect.ID = result.ID
 
 	_, err = firestore.StoreUser(user)
 	if err != nil {
 		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 	}
 
-	res = &PutConnectResponse{
+	res = &PostConnectResponse{
 		Code:    http.StatusOK,
 		Message: "Success",
 	}
@@ -82,6 +82,6 @@ func (p *PutConnectController) PutConnect(
 }
 
 // AutoBind - use echo.Bind
-func (p *PutConnectController) AutoBind() bool {
+func (p *PostConnectController) AutoBind() bool {
 	return true
 }
