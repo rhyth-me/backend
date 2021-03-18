@@ -36,7 +36,7 @@ func initEchoSetting(e *echo.Echo) *echo.Echo {
 	// CORS config
 	origins := []string{"https://rhyth.me"}
 	if os.Getenv("STAGING") == "true" {
-		origins = []string{"https://staging.rhyth.me", "http://dev.rhyth.me:3000", "http://dev.rhyth.me:8080", "http://localhost:3000", "http://localhost:8080"}
+		origins = []string{"https://staging.rhyth.me", "https://dev.rhyth.me"}
 	}
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
