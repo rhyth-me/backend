@@ -50,6 +50,15 @@ func CreateAccount(user *model.User, access model.Access) (*stripe.Account, erro
 	return a, nil
 }
 
+// GetAccount - Get an account on Stripe.
+func GetAccount(accountID string) (*stripe.Account, error) {
+	a, err := Client.Account.GetByID(accountID, nil)
+	if err != nil {
+		return nil, errors.New("Failed to delete an account")
+	}
+	return a, nil
+}
+
 // DeleteAccount - Delete an account on Stripe.
 func DeleteAccount(accountID string) error {
 	_, err := Client.Account.Del(accountID, nil)
