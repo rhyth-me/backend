@@ -52,14 +52,14 @@ func (g *GetLoginController) GetLogin(
 		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 	}
 
-	if user.Payment.ConnectID == "" {
+	if user.Payment.Connect.ID == "" {
 		body := map[string]string{
 			"message": "You don't have a connect account.",
 		}
 		return nil, wrapper.NewAPIError(http.StatusNotFound, body)
 	}
 
-	al, err := stripe.IssueLoginLink(user.Payment.ConnectID)
+	al, err := stripe.IssueLoginLink(user.Payment.Connect.ID)
 	if err != nil {
 		return nil, wrapper.NewAPIError(http.StatusInternalServerError)
 	}
