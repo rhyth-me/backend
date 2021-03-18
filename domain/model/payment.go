@@ -2,9 +2,14 @@ package model
 
 // Payment - Information about the user's payment.
 type Payment struct {
-	CustomerID string `firestore:"customerId" json:"-"` // prefix - `cus_`
-	ConnectID  string `firestore:"connectId" json:"-"`  // prefix - `acct_`
-	Cards      []Card `firestore:"cards" json:"-"`
+	CustomerID string  `firestore:"customerId" json:"-"` // prefix - `cus_`
+	Connect    Connect `firestore:"connect" json:"-"`
+	Cards      []Card  `firestore:"cards" json:"-"`
+}
+
+type Connect struct {
+	ID     string `firestore:"id" json:"-"` // prefix - `acct_`
+	Status int    `firestore:"status" json:"-"`
 }
 
 // Card - Information about the card.

@@ -29,8 +29,3 @@ type SocialProfile struct {
 	StatusMessage string `firestore:"statusMessage" json:"statusMessage" validate:"omitempty,min=0,max=150"`
 	ImageHash     string `firestore:"imageHash" json:"imageHash" validate:"omitempty,len=64"`
 }
-
-// PayoutSettings - information for withdrawal.
-type PayoutSettings struct {
-	StripeID string `firestore:"stripeId"`
-}
