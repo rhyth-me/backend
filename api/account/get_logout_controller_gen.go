@@ -58,6 +58,7 @@ func (g *GetLogoutController) GetLogout(
 		Name:     auth.SessionName,
 		Value:    "",
 		Domain:   "rhyth.me",
+		Path:     "/",
 		MaxAge:   0,
 		Secure:   true,
 		HttpOnly: true,
