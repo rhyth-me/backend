@@ -84,3 +84,15 @@ func IssueLoginLink(accountID string) (*stripe.AccountLink, error) {
 
 	return al, nil
 }
+
+func GetBalance(accountID string) (*stripe.Balance, error) {
+	params := &stripe.BalanceParams{}
+	params.SetStripeAccount(accountID)
+
+	bal, err := Client.Balance.Get(params)
+	if err != nil {
+		return nil, errors.New("Failed to fetch balance")
+	}
+
+	return bal, nil
+}
