@@ -29,8 +29,54 @@ func NewRoutes(p *props.ControllerProps, router *echo.Group, opts ...io.Writer) 
 	r := &Routes{
 		router: router,
 	}
+	router.GET("balance", r.GetBalance(p))
 	router.GET("login", r.GetLogin(p))
 	return r
+}
+
+// GetBalance ...
+func (r *Routes) GetBalance(p *props.ControllerProps) echo.HandlerFunc {
+	i := NewGetBalanceController(p)
+
+	b, ok := (interface{})(i).(interface{ AutoBind() bool })
+	bindable := !ok || b.AutoBind()
+
+	return func(c echo.Context) error {
+		var (
+			req  *GetBalanceRequest
+			werr *wrapper.APIError
+		)
+
+		if bindable {
+			req = new(GetBalanceRequest)
+			if err := c.Bind(req); err != nil {
+				log.Printf("failed to JSON binding(/account/connect/balance): %+v", err)
+				return c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"code":    http.StatusBadRequest,
+					"message": "invalid request.",
+				})
+			}
+			if err := c.Validate(req); err != nil && err != echo.ErrValidatorNotRegistered {
+				if xerrors.As(err, &werr) {
+					return c.JSON(werr.Status, werr.Body)
+				}
+				return err
+			}
+		}
+		res, err := i.GetBalance(c, req)
+		if err != nil {
+			if xerrors.As(err, &werr) {
+				log.Printf("%+v", werr)
+				return c.JSON(werr.Status, werr.Body)
+			}
+			return err
+		}
+		if res == nil {
+			return nil
+		}
+
+		return c.JSON(http.StatusOK, res)
+	}
 }
 
 // GetLogin ...
@@ -76,6 +122,11 @@ func (r *Routes) GetLogin(p *props.ControllerProps) echo.HandlerFunc {
 
 		return c.JSON(http.StatusOK, res)
 	}
+}
+
+// IGetBalanceController ...
+type IGetBalanceController interface {
+	GetBalance(c echo.Context, req *GetBalanceRequest) (res *GetBalanceResponse, err error)
 }
 
 // IGetLoginController ...
